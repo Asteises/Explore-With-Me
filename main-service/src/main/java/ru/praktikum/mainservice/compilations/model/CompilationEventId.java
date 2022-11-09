@@ -15,7 +15,6 @@ import java.io.Serializable;
 @Setter
 @ToString
 @NoArgsConstructor
-@Entity
 public class CompilationEventId implements Serializable {
     private static final long serialVersionUID = 1300120015012804277L;
     @javax.validation.constraints.NotNull

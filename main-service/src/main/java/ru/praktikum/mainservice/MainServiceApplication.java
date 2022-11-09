@@ -10,4 +10,6 @@ public class MainServiceApplication {
 		SpringApplication.run(MainServiceApplication.class, args);
 	}
 
+	// TODO Какие таблицы лучше будет проиндексировать?
+
 }

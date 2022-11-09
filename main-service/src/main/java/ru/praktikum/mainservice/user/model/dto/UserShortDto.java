@@ -20,9 +20,4 @@ public class UserShortDto {
 
     @JsonProperty("name")
     private String name = null;
-
-    public UserShortDto id(Long id) {
-        this.id = id;
-        return this;
-    }
 }

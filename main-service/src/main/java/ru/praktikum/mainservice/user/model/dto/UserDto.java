@@ -6,6 +6,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
 /**
  * Пользователь
  */
@@ -15,12 +18,17 @@ import org.springframework.validation.annotation.Validated;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserDto {
-    @JsonProperty("email")
-    private String email = null;
 
     @JsonProperty("id")
-    private Long id = null;
+    private Long id;
+
+    @JsonProperty("email")
+    @NotNull
+    @NotBlank
+    private String email;
 
     @JsonProperty("name")
-    private String name = null;
+    @NotNull
+    @NotBlank
+    private String name;
 }
