@@ -6,6 +6,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
 /**
  * Категория
  */
@@ -15,9 +18,12 @@ import org.springframework.validation.annotation.Validated;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CategoryDto {
+
     @JsonProperty("id")
     private Long id = null;
 
     @JsonProperty("name")
+    @NotNull
+    @NotBlank
     private String name = null;
 }

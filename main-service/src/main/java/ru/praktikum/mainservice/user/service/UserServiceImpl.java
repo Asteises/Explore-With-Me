@@ -28,7 +28,7 @@ public class UserServiceImpl implements UserService {
     public UserDto createUser(UserDto userDto) {
         User user = UserMapper.userDtoToUser(userDto);
         user = userStorage.save(user);
-        log.info("Создан новый пользователь: userId={}, email={}, name={}", user.getId(), user.getEmail(), user.getName());
+        log.info("Создан новый пользователь: {}", user);
         return UserMapper.userToUserDto(user);
     }
 
@@ -51,14 +51,14 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void deleteUser(long userId) {
-        User user = checkUser(userId);
-        log.info("Пользователь удален: {}", user.toString());
-        userStorage.delete(user);
+        checkUser(userId);
+        log.info("Пользователь удален: userId={}", userId);
+        userStorage.deleteById(userId);
     }
 
-    public User checkUser(long userId) {
+    public void checkUser(long userId) {
         log.info("Проверяем наличие пользователя: userId={}", userId);
-        return userStorage.findById(userId)
-                .orElseThrow(() -> new NotFoundException(String.format("Пользователь не найден: userId= %s", userId)));
+        userStorage.findById(userId)
+                .orElseThrow(() -> new NotFoundException(String.format("Пользователь не найден: userId=%s", userId)));
     }
 }
