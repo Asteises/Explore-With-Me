@@ -1,5 +1,6 @@
 package ru.praktikum.mainservice.event.mapper;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.stereotype.Service;
 import ru.praktikum.mainservice.Location;
 import ru.praktikum.mainservice.category.mapper.CategoryMapper;
