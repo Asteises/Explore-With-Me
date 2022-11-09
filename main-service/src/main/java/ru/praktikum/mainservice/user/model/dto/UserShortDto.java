@@ -15,9 +15,10 @@ import org.springframework.validation.annotation.Validated;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserShortDto {
+
     @JsonProperty("id")
-    private Long id = null;
+    private Long id;
 
     @JsonProperty("name")
-    private String name = null;
+    private String name;
 }

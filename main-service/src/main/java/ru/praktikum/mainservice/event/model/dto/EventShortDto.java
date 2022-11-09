@@ -18,29 +18,29 @@ import ru.praktikum.mainservice.user.model.dto.UserShortDto;
 @AllArgsConstructor
 public class EventShortDto {
     @JsonProperty("annotation")
-    private String annotation = null;
+    private String annotation;
 
     @JsonProperty("category")
-    private CategoryDto category = null;
+    private CategoryDto category;
 
     @JsonProperty("confirmedRequests")
-    private Long confirmedRequests = null;
+    private Long confirmedRequests;
 
     @JsonProperty("eventDate")
-    private String eventDate = null;
+    private String eventDate;
 
     @JsonProperty("id")
-    private Long id = null;
+    private Long id;
 
     @JsonProperty("initiator")
-    private UserShortDto initiator = null;
+    private UserShortDto initiator;
 
     @JsonProperty("paid")
-    private Boolean paid = null;
+    private Boolean paid;
 
     @JsonProperty("title")
-    private String title = null;
+    private String title;
 
     @JsonProperty("views")
-    private Long views = null;
+    private Long views;
 }

@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.praktikum.mainservice.user.model.User;
 import ru.praktikum.mainservice.user.model.dto.UserDto;
+import ru.praktikum.mainservice.user.model.dto.UserShortDto;
 
 @Slf4j
 @Service
@@ -25,5 +26,10 @@ public class UserMapper {
         user.setEmail(userDto.getEmail());
         log.info("Маппим UserDto в User");
         return user;
+    }
+
+    public static UserShortDto userToUserShortDto(User user) {
+        log.info("Маппим User в UserShortDto");
+        return new UserShortDto(user.getId(), user.getName());
     }
 }

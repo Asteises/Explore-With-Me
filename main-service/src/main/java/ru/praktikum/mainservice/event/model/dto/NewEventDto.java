@@ -17,29 +17,30 @@ import ru.praktikum.mainservice.Location;
 @AllArgsConstructor
 public class NewEventDto {
     @JsonProperty("annotation")
-    private String annotation = null;
+    private String annotation;
 
     @JsonProperty("category")
-    private Long category = null;
+    private Long category;
 
     @JsonProperty("description")
-    private String description = null;
+    private String description;
 
+    //дата и время на которые намечено событие не может быть раньше, чем через два часа от текущего момента
     @JsonProperty("eventDate")
-    private String eventDate = null;
+    private String eventDate;
 
     @JsonProperty("location")
-    private Location location = null;
+    private Location location;
 
     @JsonProperty("paid")
-    private Boolean paid = false;
+    private Boolean paid;
 
     @JsonProperty("participantLimit")
-    private Integer participantLimit = 0;
+    private Integer participantLimit;
 
     @JsonProperty("requestModeration")
-    private Boolean requestModeration = true;
+    private Boolean requestModeration;
 
     @JsonProperty("title")
-    private String title = null;
+    private String title;
 }

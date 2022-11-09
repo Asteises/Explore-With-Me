@@ -16,8 +16,8 @@ import org.springframework.validation.annotation.Validated;
 @AllArgsConstructor
 public class Location {
     @JsonProperty("lat")
-    private Float lat = null;
+    private Float lat;
 
     @JsonProperty("lon")
-    private Float lon = null;
+    private Float lon;
 }
