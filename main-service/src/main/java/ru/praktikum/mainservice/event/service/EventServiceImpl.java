@@ -2,13 +2,14 @@ package ru.praktikum.mainservice.event.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import ru.praktikum.mainservice.StateEnum;
 import ru.praktikum.mainservice.category.model.Category;
 import ru.praktikum.mainservice.category.repository.CategoryStorage;
-import ru.praktikum.mainservice.event.model.EventState;
 import ru.praktikum.mainservice.event.mapper.EventMapper;
 import ru.praktikum.mainservice.event.model.Event;
+import ru.praktikum.mainservice.event.model.EventState;
 import ru.praktikum.mainservice.event.model.dto.EventFullDto;
 import ru.praktikum.mainservice.event.model.dto.NewEventDto;
 import ru.praktikum.mainservice.event.repository.EventStateStorage;
@@ -18,6 +19,9 @@ import ru.praktikum.mainservice.exception.NotFoundException;
 import ru.praktikum.mainservice.request.model.dto.UpdateEventRequest;
 import ru.praktikum.mainservice.user.model.User;
 import ru.praktikum.mainservice.user.repository.UserStorage;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -116,6 +120,37 @@ public class EventServiceImpl implements EventService {
         return eventFullDto;
     }
 
+    /*
+    GET EVENTS - Получение событий добавленных текущим пользователем:
+    */
+    @Override
+    public List<EventFullDto> getAllOwnEvents(long userId, Integer from, Integer size) {
+        User user = checkUserAvailableInDb(userId);
+        List<Event> events = eventStorage.findEventByInitiator_Id(userId, PageRequest.of(from / size, size)).toList();
+        log.info("Получение пользователем userId={} списка созданных событий: eventsSize={}", userId, events.size());
+        return events.stream().map(EventMapper::fromEventToEventFullDto).collect(Collectors.toList());
+    }
+
+    /*
+    GET EVENT - Получение полной информации о событии добавленном текущим пользователем:
+    */
+    @Override
+    public EventFullDto getOwnEventById(long userId, long eventId) {
+        User user = checkUserAvailableInDb(userId);
+        Event event = checkEventAvailableInDb(eventId);
+        log.info("Получение пользователем userId={} своего события: {}", userId, event);
+        return EventMapper.fromEventToEventFullDto(event);
+    }
+
+    @Override
+    public EventFullDto cancelOwnEvent(long userId, long eventId) {
+        User user = checkUserAvailableInDb(userId);
+        Event event = checkEventAvailableInDb(eventId);
+        EventState eventState = c
+        log.info("Отмена пользователем userId={} своего события: eventId={}", userId, eventId);
+    }
+
+    //TODO Посмотреть что можно сделать с этими методами
     private User checkUserAvailableInDb(long userId) {
         return userStorage.findById(userId)
                 .orElseThrow(() -> new NotFoundException(String
