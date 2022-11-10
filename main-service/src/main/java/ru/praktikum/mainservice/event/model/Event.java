@@ -8,7 +8,7 @@ import ru.praktikum.mainservice.user.model.User;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.time.Instant;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -20,8 +20,8 @@ public class Event {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @javax.validation.constraints.Size(max = 120)
-    @javax.validation.constraints.NotNull
+    @Size(max = 120)
+    @NotNull
     @Column(name = "title", nullable = false, length = 120)
     private String title;
 
@@ -47,10 +47,10 @@ public class Event {
 
     @NotNull
     @Column(name = "event_date", nullable = false)
-    private Instant eventDate;
+    private LocalDateTime eventDate;
 
     @Column(name = "created_on")
-    private Instant createdOn;
+    private LocalDateTime createdOn;
 
     @Column(name = "location_lat")
     private Double locationLat;
@@ -58,7 +58,7 @@ public class Event {
     @Column(name = "location_lon")
     private Double locationLon;
 
-    @javax.validation.constraints.NotNull
+    @NotNull
     @Column(name = "paid", nullable = false)
     private Boolean paid;
 
@@ -66,7 +66,7 @@ public class Event {
     private Long participantLimit;
 
     @Column(name = "published_on")
-    private Instant publishedOn;
+    private LocalDateTime publishedOn;
 
     @Column(name = "request_moderation")
     private Boolean requestModeration;

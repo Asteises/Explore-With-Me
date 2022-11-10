@@ -15,26 +15,26 @@ import org.springframework.validation.annotation.Validated;
 @AllArgsConstructor
 public class UpdateEventRequest {
     @JsonProperty("annotation")
-    private String annotation = null;
+    private String annotation;
 
     @JsonProperty("category")
-    private Long category = null;
+    private Long category;
 
     @JsonProperty("description")
-    private String description = null;
+    private String description;
 
     @JsonProperty("eventDate")
-    private String eventDate = null;
+    private String eventDate;
 
     @JsonProperty("eventId")
-    private Long eventId = null;
+    private Long eventId;
 
     @JsonProperty("paid")
-    private Boolean paid = null;
+    private Boolean paid;
 
     @JsonProperty("participantLimit")
-    private Integer participantLimit = null;
+    private Integer participantLimit;
 
     @JsonProperty("title")
-    private String title = null;
+    private String title;
 }

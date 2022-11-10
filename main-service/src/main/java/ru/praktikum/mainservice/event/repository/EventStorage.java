@@ -6,4 +6,5 @@ import ru.praktikum.mainservice.event.model.Event;
 
 @Repository
 public interface EventStorage extends JpaRepository<Event, Long> {
+
 }

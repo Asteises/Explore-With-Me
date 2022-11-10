@@ -1,4 +1,4 @@
-package ru.praktikum.mainservice.event;
+package ru.praktikum.mainservice.event.model;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -6,16 +6,11 @@ import lombok.Setter;
 import lombok.ToString;
 import ru.praktikum.mainservice.event.model.Event;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.Instant;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -25,6 +20,7 @@ import java.time.Instant;
 @Table(name = "event_states")
 public class EventState {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 
@@ -38,5 +34,5 @@ public class EventState {
     private String state;
 
     @Column(name = "created_on")
-    private Instant createdOn;
+    private LocalDateTime createdOn;
 }
