@@ -51,14 +51,15 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void deleteUser(long userId) {
-        checkUser(userId);
+        User user = checkUserAvailableInDb(userId);
         log.info("Пользователь удален: userId={}", userId);
-        userStorage.deleteById(userId);
+        userStorage.delete(user);
     }
 
-    public void checkUser(long userId) {
+    @Override
+    public User checkUserAvailableInDb(long userId) {
         log.info("Проверяем наличие пользователя: userId={}", userId);
-        userStorage.findById(userId)
+        return userStorage.findById(userId)
                 .orElseThrow(() -> new NotFoundException(String.format("Пользователь не найден: userId=%s", userId)));
     }
 }

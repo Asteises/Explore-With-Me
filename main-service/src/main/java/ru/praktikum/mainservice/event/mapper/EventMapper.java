@@ -96,9 +96,7 @@ public class EventMapper {
         return eventShortDto;
     }
 
-    public static Event fromUpdateEventRequestToEvent(UpdateEventRequest updateEventRequest) {
-        Event event = new Event();
-
+    public static void fromUpdateEventRequestToEvent(Event event, UpdateEventRequest updateEventRequest) {
         // Далее изменяем те данные, которые пришли в newEventDto;
         if (updateEventRequest.getAnnotation() != null) {
             event.setAnnotation(updateEventRequest.getAnnotation());
@@ -119,7 +117,6 @@ public class EventMapper {
         if (updateEventRequest.getTitle() != null) {
             event.setTitle(updateEventRequest.getTitle());
         }
-        return event;
     }
 
     public static EventState fromEventToEventState(Event event) {

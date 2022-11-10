@@ -77,25 +77,31 @@ public class EventServiceImpl implements EventService {
         а положить в Event нужно всего пользователя, дополнительно проверяем наличие пользователя в БД;
         */
         User currentUser = checkUserAvailableInDb(userId);
+
         // Проверяем наличие события в БД;
         Event currentEvent = checkEventAvailableInDb(updateEventRequest.getEventId());
+
         // Проверяем что событие принадлежит текущему пользователю;
         if (!currentEvent.getInitiator().equals(currentUser)) {
             throw new BadRequestException(String.format("Событие eventId=%s не принадлежит данному пользователю userId=%s", currentEvent.getId(), userId));
         }
+
         // Проверяем чтобы событие не было опубликовано;
         EventState eventState = eventStateStorage.findEventStateByEvent_Id(currentEvent.getId());
         if (eventState.getState().equals(StateEnum.PUBLISHED.toString())) {
             throw new BadRequestException(String.format("Событие eventId=%s нельзя изменить, так как оно опубликовано", currentEvent.getId()));
         }
+
         // Сначала Мапим ответ, все что пришло в updateEventRequest;
-        currentEvent = EventMapper.fromUpdateEventRequestToEvent(updateEventRequest);
+        EventMapper.fromUpdateEventRequestToEvent(currentEvent, updateEventRequest);
+
         // Так как новые данные нужно будет сохранить в БД, то нужна вся категория, а не просто catId;
         if (updateEventRequest.getCategory() != null) {
             // Проверяем категорию;
             Category category = checkCategoryAvailableInDb(updateEventRequest.getCategory());
             currentEvent.setCategory(category);
         }
+
         // Обновляем данные в БД;
         eventStorage.save(currentEvent);
         EventFullDto eventFullDto = EventMapper.fromEventToEventFullDto(currentEvent);
@@ -122,9 +128,10 @@ public class EventServiceImpl implements EventService {
                         .format("Категория не найдена: catId=%s", catId)));
     }
 
-    private Event checkEventAvailableInDb(long eventId) {
+    @Override
+    public Event checkEventAvailableInDb(long eventId) {
         return eventStorage.findById(eventId)
                 .orElseThrow(() -> new NotFoundException(String
-                        .format("Событие не найдено: catId=%s", eventId)));
+                        .format("Событие не найдено: eventId=%s", eventId)));
     }
 }

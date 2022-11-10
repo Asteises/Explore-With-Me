@@ -16,17 +16,17 @@ import org.springframework.validation.annotation.Validated;
 @AllArgsConstructor
 public class ParticipationRequestDto {
     @JsonProperty("created")
-    private String created = null;
+    private String created;
 
     @JsonProperty("event")
-    private Long event = null;
+    private Long event;
 
     @JsonProperty("id")
-    private Long id = null;
+    private Long id;
 
     @JsonProperty("requester")
-    private Long requester = null;
+    private Long requester;
 
     @JsonProperty("status")
-    private String status = null;
+    private String status;
 }
