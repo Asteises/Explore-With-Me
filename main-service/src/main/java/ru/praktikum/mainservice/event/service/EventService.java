@@ -1,9 +1,12 @@
 package ru.praktikum.mainservice.event.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 import ru.praktikum.mainservice.event.model.Event;
 import ru.praktikum.mainservice.event.model.dto.EventFullDto;
+import ru.praktikum.mainservice.event.model.dto.EventShortDto;
 import ru.praktikum.mainservice.event.model.dto.NewEventDto;
+import ru.praktikum.mainservice.request.model.dto.ParticipationRequestDto;
 import ru.praktikum.mainservice.request.model.dto.UpdateEventRequest;
 
 import java.util.List;
@@ -15,11 +18,29 @@ public interface EventService {
 
     EventFullDto updateEventByCurrentUser(long userId, UpdateEventRequest updateEventRequest);
 
-    List<EventFullDto> getAllOwnEvents(long userId, Integer from, Integer size);
+    List<EventFullDto> getAllEventsByCurrentUser(long userId, Integer from, Integer size);
 
-    EventFullDto getOwnEventById(long userId, long eventId);
+    EventFullDto getEventByIdByCurrentUser(long userId, long eventId);
 
-    EventFullDto cancelOwnEvent(long userId, long eventId);
+    EventFullDto cancelEventByCurrentUser(long userId, long eventId);
+
+    List<ParticipationRequestDto> getRequestsByEventByCurrentUser(long userId, long eventId);
+
+    ParticipationRequestDto acceptRequestOnEventByCurrentUser(long userId, long eventId, long reqId);
+
+    ParticipationRequestDto cancelRequestOnEventByCurrentUser(long userId, long eventId, long reqId);
+
+    List<EventShortDto> getAllPublicEvents(String text,
+                                           int[] categories,
+                                           Boolean paid,
+                                           String rangeStart,
+                                           String rangeEnd,
+                                           Boolean onlyAvailable,
+                                           String sort,
+                                           Integer from,
+                                           Integer size);
+
+    EventFullDto getPublicEventById(@PathVariable long id);
 
     Event checkEventAvailableInDb(long eventId);
 }

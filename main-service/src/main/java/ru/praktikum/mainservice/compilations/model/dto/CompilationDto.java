@@ -19,16 +19,17 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CompilationDto {
+
     @JsonProperty("events")
     @Valid
-    private List<EventShortDto> events = null;
+    private List<EventShortDto> events;
 
     @JsonProperty("id")
-    private Long id = null;
+    private Long id;
 
     @JsonProperty("pinned")
-    private Boolean pinned = null;
+    private Boolean pinned;
 
     @JsonProperty("title")
-    private String title = null;
+    private String title;
 }
