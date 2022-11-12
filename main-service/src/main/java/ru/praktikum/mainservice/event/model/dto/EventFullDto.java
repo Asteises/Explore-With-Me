@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import ru.praktikum.mainservice.category.model.dto.CategoryDto;
 import ru.praktikum.mainservice.Location;
-import ru.praktikum.mainservice.StateEnum;
+import ru.praktikum.mainservice.event.enums.StateEnum;
 import ru.praktikum.mainservice.user.model.dto.UserShortDto;
 
 /**

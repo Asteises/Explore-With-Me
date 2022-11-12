@@ -3,6 +3,7 @@ package ru.praktikum.mainservice.event.service;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 import ru.praktikum.mainservice.event.model.Event;
+import ru.praktikum.mainservice.event.model.EventState;
 import ru.praktikum.mainservice.event.model.dto.EventFullDto;
 import ru.praktikum.mainservice.event.model.dto.EventShortDto;
 import ru.praktikum.mainservice.event.model.dto.NewEventDto;
@@ -43,4 +44,8 @@ public interface EventService {
     EventFullDto getPublicEventById(@PathVariable long id);
 
     Event checkEventAvailableInDb(long eventId);
+
+    EventState checkEventStateAvailableInDb(long eventId);
+
+    Boolean checkRequestLimitAndModeration(Event event);
 }

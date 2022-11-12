@@ -3,7 +3,7 @@ package ru.praktikum.mainservice.event.mapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.praktikum.mainservice.Location;
-import ru.praktikum.mainservice.StateEnum;
+import ru.praktikum.mainservice.event.enums.StateEnum;
 import ru.praktikum.mainservice.category.mapper.CategoryMapper;
 import ru.praktikum.mainservice.event.model.Event;
 import ru.praktikum.mainservice.event.model.EventState;

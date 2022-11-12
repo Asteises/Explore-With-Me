@@ -21,4 +21,5 @@ public class CategoryMapper {
         log.info("Маппим Category в CategoryDto");
         return new CategoryDto(category.getId(), category.getName());
     }
+
 }

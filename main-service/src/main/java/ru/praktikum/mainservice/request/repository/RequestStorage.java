@@ -5,6 +5,7 @@ import org.springframework.stereotype.Repository;
 import ru.praktikum.mainservice.request.model.Request;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface RequestStorage extends JpaRepository<Request, Long> {
@@ -13,4 +14,6 @@ public interface RequestStorage extends JpaRepository<Request, Long> {
     List<Request> findAllByEvent_Id(long eventId);
 
     List<Request> findAllByEvent_IdAndStatus(long eventId, String status);
+
+    Optional<Request> findRequestByEvent_IdAndRequester_Id(long eventId, long requesterId);
 }

@@ -1,4 +1,4 @@
-package ru.praktikum.mainservice;
+package ru.praktikum.mainservice.event.enums;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;

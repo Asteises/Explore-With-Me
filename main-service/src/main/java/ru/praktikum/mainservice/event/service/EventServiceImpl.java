@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import ru.praktikum.mainservice.StateEnum;
+import ru.praktikum.mainservice.event.enums.StateEnum;
 import ru.praktikum.mainservice.category.model.Category;
 import ru.praktikum.mainservice.category.repository.CategoryStorage;
 import ru.praktikum.mainservice.event.mapper.EventMapper;
@@ -253,16 +253,16 @@ public class EventServiceImpl implements EventService {
         ParticipationRequestDto pRDto = RequestMapper.fromRequestToParticipationRequestDto(request);
 
         // Проверяем лимит заявок для участия в событии и модерацию;
-        int checkResult = checkRequestLimitAndModeration(event);
+        Boolean checkResult = checkRequestLimitAndModeration(event);
 
         // Если нет лимита и отключена модерация;
-        if (checkResult == 1) {
+        if (checkResult) {
             // Cетим статус и сохраняем обновленные данные в БД;
             request.setStatus("CONFIRMED");
             requestStorage.save(request);
 
             // Если данный запрос стал последним из одобренных;
-        } else if (checkResult == 2) {
+        } else {
             // Cетим статус и сохраняем обновленные данные в БД;
             request.setStatus("CONFIRMED");
             requestStorage.save(request);
@@ -272,9 +272,6 @@ public class EventServiceImpl implements EventService {
             requests.forEach(req -> req.setStatus("CANCELED"));
 
             // Если лимит исчерпан, выбрасываем исключение;
-        } else if (checkResult == 3) {
-            throw new BadRequestException(String.format("Нельзя подтвердить заявку reqId=%s, " +
-                    "уже достигнут лимит по заявкам на данное событие eventId=%s", reqId, eventId));
         }
 
         pRDto.setStatus("CONFIRMED");
@@ -356,7 +353,8 @@ public class EventServiceImpl implements EventService {
                         .format("Категория не найдена: catId=%s", catId)));
     }
 
-    private EventState checkEventStateAvailableInDb(long eventId) {
+    @Override
+    public EventState checkEventStateAvailableInDb(long eventId) {
         return eventStateStorage.findEventStateByEvent_Id(eventId).orElseThrow(() -> new NotFoundException(String
                 .format("EventState не найден: eventId=%s", eventId)));
     }
@@ -395,7 +393,11 @@ public class EventServiceImpl implements EventService {
         log.info("Проверяем статус у eventStateId={} : state={}", eventState.getId(), eventState.getState());
     }
 
-    private Integer checkRequestLimitAndModeration(Event event) {
+    /*
+    Метод проверяет количество одобренных заявок;
+    */
+    @Override
+    public Boolean checkRequestLimitAndModeration(Event event) {
 
         long totalLimit = event.getParticipantLimit();
 
@@ -405,13 +407,13 @@ public class EventServiceImpl implements EventService {
         // Если нет лимита и отключена модерация;
         if (totalLimit == 0
                 && event.getRequestModeration().equals(Boolean.FALSE)) {
-            return 1;
+            return true;
             // Если осталось последнее место;
         } else if (totalLimit == currentLimit + 1) {
-            return 2;
+            return false;
             // Если лимит исчерпан;
         } else  {
-            return 3;
+            throw new BadRequestException(String.format("Лимит заявок на событие превышен: eventId={}", event.getId()));
         }
     }
 

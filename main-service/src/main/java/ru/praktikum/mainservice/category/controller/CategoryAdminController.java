@@ -13,22 +13,37 @@ import javax.validation.Valid;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/admin/categories")
-public class CategoryController {
+public class CategoryAdminController {
 
     private final CategoryService categoryService;
 
+    /*
+    POST CATEGORIES - Добавление новой категорий
+        Обратите внимание:
+            имя категории должно быть уникальным;
+    */
     @PostMapping
     public CategoryDto createCategory(@Valid @RequestBody NewCategoryDto newCategoryDto) {
         log.info("Создаем новую категорию {}", newCategoryDto.toString());
         return categoryService.createCategory(newCategoryDto);
     }
 
+    /*
+    PATCH CATEGORIES - Добавление новой категорий
+        Обратите внимание:
+            имя категории должно быть уникальным;
+    */
     @PatchMapping
     public CategoryDto updateCategory(@Valid @RequestBody CategoryDto categoryDto) {
         log.info("Меняем категорию: categoryId={}, name={}", categoryDto.getId(), categoryDto.getName());
         return categoryService.updateCategory(categoryDto);
     }
 
+    /*
+    DELETE CATEGORIES - Добавление новой категорий
+        Обратите внимание:
+            с категорией не должно быть связано ни одного события;
+    */
     @DeleteMapping("/{catId}")
     public void deleteUser(@PathVariable long catId) {
         log.info("Удаляем категорию catId={}", catId);
