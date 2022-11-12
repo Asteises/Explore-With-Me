@@ -7,6 +7,8 @@ import ru.praktikum.mainservice.event.model.dto.EventFullDto;
 import ru.praktikum.mainservice.event.model.dto.EventShortDto;
 import ru.praktikum.mainservice.event.service.EventService;
 
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 @Slf4j
@@ -35,8 +37,8 @@ public class EventPublicController {
                                                   @RequestParam String rangeEnd,
                                                   @RequestParam Boolean onlyAvailable,
                                                   @RequestParam String sort,
-                                                  @RequestParam Integer from,
-                                                  @RequestParam Integer size) {
+                                                  @PositiveOrZero @RequestParam(defaultValue = "0") Integer from,
+                                                  @Positive @RequestParam(defaultValue = "10") Integer size) {
         log.info("Получаем все события с учетом фильтрации: text={}, categories={}, paid={}, rangeStart={}, " +
                         "rangeEnd={}, onlyAvailable={}, sort={}, from={}, size={}",
                 text, categories, paid, rangeStart, rangeEnd, onlyAvailable, sort, from, size);

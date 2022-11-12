@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import ru.praktikum.mainservice.event.model.Event;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -13,4 +14,6 @@ public interface EventStorage extends JpaRepository<Event, Long> {
     Page<Event> findEventByInitiator_Id(long userId, Pageable pageable);
 
     Optional<Event> findEventByCategory_Id(long catId);
+
+    Page<Event> findAllByIdIn(List<Long> eventIds, Pageable pageable);
 }

@@ -25,11 +25,11 @@ public class RequestController {
     /*
     POST REQUEST - Добавление запроса от текущего пользователя на участие в событии
         Обратите внимание:
-            нельзя добавить повторный запрос;
-            инициатор события не может добавить запрос на участие в своём событии;
-            нельзя участвовать в неопубликованном событии;
-            если у события достигнут лимит запросов на участие - необходимо вернуть ошибку;
-            если для события отключена пре-модерация запросов на участие, то запрос должен автоматически перейти в состояние подтвержденного;
+            + нельзя добавить повторный запрос;
+            + инициатор события не может добавить запрос на участие в своём событии;
+            + нельзя участвовать в неопубликованном событии;
+            + если у события достигнут лимит запросов на участие - необходимо вернуть ошибку;
+            + если для события отключена пре-модерация запросов на участие, то запрос должен автоматически перейти в состояние подтвержденного;
      */
     @PostMapping("/{userId}/requests")
     public ParticipationRequestDto createRequest(@PathVariable long userId,
@@ -38,6 +38,9 @@ public class RequestController {
         return requestService.createRequest(userId, eventId);
     }
 
+    /*
+    PATCH REQUEST - Отмена своего запроса на участие в событии
+     */
     @PatchMapping("/{userId}/requests/{requestId}/cancel")
     public ParticipationRequestDto cancelOwnRequest(@PathVariable long userId,
                                                     @PathVariable long requestId) {
@@ -45,6 +48,9 @@ public class RequestController {
         return requestService.cancelOwnRequest(userId, requestId);
     }
 
+    /*
+    GET REQUEST - Получение информации о заявках текущего пользователя на участие в чужих событиях
+    */
     @GetMapping("/{userId}/requests")
     public List<ParticipationRequestDto> getRequests(@PathVariable long userId) {
         log.info("Пользователь userId={} получает все свои запросы", userId);

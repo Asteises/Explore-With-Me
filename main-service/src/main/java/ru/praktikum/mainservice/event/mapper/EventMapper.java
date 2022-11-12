@@ -2,11 +2,12 @@ package ru.praktikum.mainservice.event.mapper;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.praktikum.mainservice.Location;
+import ru.praktikum.mainservice.event.model.Location;
 import ru.praktikum.mainservice.event.enums.StateEnum;
 import ru.praktikum.mainservice.category.mapper.CategoryMapper;
 import ru.praktikum.mainservice.event.model.Event;
 import ru.praktikum.mainservice.event.model.EventState;
+import ru.praktikum.mainservice.event.model.dto.AdminUpdateEventRequest;
 import ru.praktikum.mainservice.event.model.dto.EventFullDto;
 import ru.praktikum.mainservice.event.model.dto.EventShortDto;
 import ru.praktikum.mainservice.event.model.dto.NewEventDto;
@@ -20,7 +21,7 @@ import java.time.format.DateTimeFormatter;
 @Service
 public class EventMapper {
 
-    private static final DateTimeFormatter FORMATTER_EVENT_DATE = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    public static final DateTimeFormatter FORMATTER_EVENT_DATE = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public static Event toEvent(NewEventDto newEventDto) {
         Event event = new Event();
@@ -97,7 +98,7 @@ public class EventMapper {
     }
 
     public static void fromUpdateEventRequestToEvent(Event event, UpdateEventRequest updateEventRequest) {
-        // Далее изменяем те данные, которые пришли в newEventDto;
+
         if (updateEventRequest.getAnnotation() != null) {
             event.setAnnotation(updateEventRequest.getAnnotation());
         }
@@ -125,5 +126,35 @@ public class EventMapper {
         eventState.setState(StateEnum.PENDING.toString());
         eventState.setCreatedOn(LocalDateTime.now());
         return eventState;
+    }
+
+    public static void fromAdminUpdateEventRequestToEvent(Event event, AdminUpdateEventRequest adminUpdateEventRequest) {
+
+        if (adminUpdateEventRequest.getAnnotation() != null) {
+            event.setAnnotation(adminUpdateEventRequest.getAnnotation());
+        }
+        if (adminUpdateEventRequest.getDescription() != null) {
+            event.setDescription(adminUpdateEventRequest.getDescription());
+        }
+        if (adminUpdateEventRequest.getEventDate() != null) {
+            LocalDateTime eventDate = LocalDateTime.parse(adminUpdateEventRequest.getEventDate(), FORMATTER_EVENT_DATE);
+            event.setEventDate(eventDate);
+        }
+        if (adminUpdateEventRequest.getLocation() != null) {
+            event.setLocationLon(adminUpdateEventRequest.getLocation().getLon().doubleValue());
+            event.setLocationLat(adminUpdateEventRequest.getLocation().getLat().doubleValue());
+        }
+        if (adminUpdateEventRequest.getPaid() != null) {
+            event.setPaid(adminUpdateEventRequest.getPaid());
+        }
+        if (adminUpdateEventRequest.getParticipantLimit() != null) {
+            event.setParticipantLimit(adminUpdateEventRequest.getParticipantLimit().longValue());
+        }
+        if (adminUpdateEventRequest.getRequestModeration() != null) {
+            event.setRequestModeration(adminUpdateEventRequest.getRequestModeration());
+        }
+        if (adminUpdateEventRequest.getTitle() != null) {
+            event.setTitle(adminUpdateEventRequest.getTitle());
+        }
     }
 }

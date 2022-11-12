@@ -1,4 +1,4 @@
-package ru.praktikum.mainservice;
+package ru.praktikum.mainservice.exception;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;

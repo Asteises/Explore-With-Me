@@ -1,4 +1,4 @@
-package ru.praktikum.mainservice;
+package ru.praktikum.mainservice.event.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;

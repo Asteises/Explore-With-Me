@@ -1,11 +1,11 @@
-package ru.praktikum.mainservice.request.model.dto;
+package ru.praktikum.mainservice.event.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.validation.annotation.Validated;
-import ru.praktikum.mainservice.Location;
+import ru.praktikum.mainservice.event.model.Location;
 
 /**
  * Информация для редактирования события администратором. Все поля необязательные. Значение полей не валидируется.
@@ -16,29 +16,29 @@ import ru.praktikum.mainservice.Location;
 @AllArgsConstructor
 public class AdminUpdateEventRequest {
     @JsonProperty("annotation")
-    private String annotation = null;
+    private String annotation;
 
     @JsonProperty("category")
-    private Long category = null;
+    private Long category;
 
     @JsonProperty("description")
-    private String description = null;
+    private String description;
 
     @JsonProperty("eventDate")
-    private String eventDate = null;
+    private String eventDate;
 
     @JsonProperty("location")
-    private Location location = null;
+    private Location location;
 
     @JsonProperty("paid")
-    private Boolean paid = null;
+    private Boolean paid;
 
     @JsonProperty("participantLimit")
-    private Integer participantLimit = null;
+    private Integer participantLimit;
 
     @JsonProperty("requestModeration")
-    private Boolean requestModeration = null;
+    private Boolean requestModeration;
 
     @JsonProperty("title")
-    private String title = null;
+    private String title;
 }

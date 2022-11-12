@@ -79,6 +79,9 @@ public class RequestServiceImpl implements RequestService {
         return RequestMapper.fromRequestToParticipationRequestDto(request);
     }
 
+    /*
+    PATCH REQUEST - Отмена своего запроса на участие в событии
+    */
     @Override
     public ParticipationRequestDto cancelOwnRequest(long userId, long requestId) {
         Request request = checkRequestAvailableInDb(requestId);
@@ -87,6 +90,9 @@ public class RequestServiceImpl implements RequestService {
         return RequestMapper.fromRequestToParticipationRequestDto(request);
     }
 
+    /*
+    GET REQUEST - Получение информации о заявках текущего пользователя на участие в чужих событиях
+    */
     @Override
     public List<ParticipationRequestDto> getRequests(long userId) {
         User user = userService.checkUserAvailableInDb(userId);
@@ -94,18 +100,27 @@ public class RequestServiceImpl implements RequestService {
         return requests.stream().map(RequestMapper::fromRequestToParticipationRequestDto).collect(Collectors.toList());
     }
 
+    /*
+    Метод для проверки существования запроса в БД;
+     */
     @Override
     public Request checkRequestAvailableInDb(long requestId) {
         return requestStorage.findById(requestId)
                 .orElseThrow(() -> new NotFoundException(String.format("Запрос с таким requestId=%s не найден", requestId)));
     }
 
+    /*
+    Метод проверяет что запрос создается впервые;
+    */
     private void checkRepeatRequest(long eventId, long requesterId) {
         requestStorage.findRequestByEvent_IdAndRequester_Id(eventId, requesterId)
                 .orElseThrow(() -> new BadRequestException(String.format("Повторный запрос от пользователя " +
                         "requesterId=%s на событие eventId=%s", requesterId, eventId)));
     }
 
+    /*
+    Метод проверяет что реквестор не является инициатором события;
+     */
     private void checkRequesterNotInitiator(Event event, User requester) {
         if (event.getInitiator().equals(requester)) {
             throw new BadRequestException(String.format("Запрос не может быть создан инициатором " +
@@ -113,6 +128,9 @@ public class RequestServiceImpl implements RequestService {
         }
     }
 
+    /*
+    Метод проверяет, что событие, на которое отправляется запрос опубликовано;
+     */
     private void checkEventStatusNotPublished(long eventId) {
         EventState eventState = eventService.checkEventStateAvailableInDb(eventId);
         if(!eventState.getState().equals("PUBLISHED")) {

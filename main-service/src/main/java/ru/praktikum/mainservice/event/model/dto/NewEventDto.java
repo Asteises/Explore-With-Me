@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.validation.annotation.Validated;
-import ru.praktikum.mainservice.Location;
+import ru.praktikum.mainservice.event.model.Location;
 
 /**
  * Новое событие

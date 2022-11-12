@@ -10,6 +10,7 @@ import ru.praktikum.mainservice.category.repository.CategoryStorage;
 import ru.praktikum.mainservice.event.mapper.EventMapper;
 import ru.praktikum.mainservice.event.model.Event;
 import ru.praktikum.mainservice.event.model.EventState;
+import ru.praktikum.mainservice.event.model.dto.AdminUpdateEventRequest;
 import ru.praktikum.mainservice.event.model.dto.EventFullDto;
 import ru.praktikum.mainservice.event.model.dto.EventShortDto;
 import ru.praktikum.mainservice.event.model.dto.NewEventDto;
@@ -25,6 +26,8 @@ import ru.praktikum.mainservice.request.repository.RequestStorage;
 import ru.praktikum.mainservice.user.model.User;
 import ru.praktikum.mainservice.user.repository.UserStorage;
 
+import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -340,6 +343,62 @@ public class EventServiceImpl implements EventService {
         return null;
     }
 
+    /*
+    GET EVENT ADMIN - Поиск событий
+        Эндпоинт возвращает полную информацию обо всех событиях подходящих под переданные условия;
+    */
+    @Override
+    public List<EventFullDto> searchEvents(Long[] users,
+                                           String[] states,
+                                           Long[] categories,
+                                           String rangeStart,
+                                           String rangeEnd,
+                                           Integer from,
+                                           Integer size) {
+        // Создаем из стрингов LocalDateTime;
+        LocalDateTime start = LocalDateTime.parse(rangeStart, EventMapper.FORMATTER_EVENT_DATE);
+        LocalDateTime end = LocalDateTime.parse(rangeEnd, EventMapper.FORMATTER_EVENT_DATE);
+
+        // Сначала находим список EventState по указанным параметрам, так как там лежат state;
+        List<EventState> eventStates =
+                eventStateStorage.findAllByEvent_Initiator_IdInAndEvent_Category_IdInAndEventEventDateBetweenAndStateIn(
+                        Arrays.stream(users).toList(),
+                        Arrays.stream(categories).toList(),
+                        start,
+                        end,
+                        Arrays.stream(states).toList());
+
+        // Подготавливаем список id найденных событий;
+        List<Long> eventIds = eventStates.stream().map(eventState -> eventState.getEvent().getId()).toList();
+
+        // Находим события;
+        List<Event> events = eventStorage.findAllByIdIn(eventIds, PageRequest.of(from / size, size)).toList();
+
+        log.info("Выводим список событий: events.size={}", events.size());
+        return events.stream().map(EventMapper::fromEventToEventFullDto).collect(Collectors.toList());
+    }
+
+    @Override
+    public EventFullDto updateEventByAdmin(long eventId, AdminUpdateEventRequest adminUpdateEventRequest) {
+        // Проверяем, что событие существует;
+        Event event = checkEventAvailableInDb(eventId);
+
+        // Мапим новые данные;
+        EventMapper.fromAdminUpdateEventRequestToEvent(event, adminUpdateEventRequest);
+
+        // Категорию сетим отдельно
+        if (adminUpdateEventRequest.getCategory() != null) {
+            Category category = checkCategoryAvailableInDb(adminUpdateEventRequest.getCategory());
+            event.setCategory(category);
+        }
+
+        // Сохраняем обновленные данные в БД;
+        eventStorage.save(event);
+
+        log.info("Админ изменил событие eventId={}: updateEvent={}", eventId, event);
+        return EventMapper.fromEventToEventFullDto(event);
+    }
+
     //TODO Посмотреть что можно сделать с этими методами
     private User checkUserAvailableInDb(long userId) {
         return userStorage.findById(userId)
@@ -416,5 +475,7 @@ public class EventServiceImpl implements EventService {
             throw new BadRequestException(String.format("Лимит заявок на событие превышен: eventId={}", event.getId()));
         }
     }
+
+
 
 }
