@@ -31,14 +31,15 @@ public class EventPublicController {
      */
     @GetMapping()
     public List<EventShortDto> getAllPublicEvents(@RequestParam String text,
-                                                  @RequestParam int[] categories,
+                                                  @RequestParam Long[] categories,
                                                   @RequestParam Boolean paid,
                                                   @RequestParam String rangeStart,
                                                   @RequestParam String rangeEnd,
-                                                  @RequestParam Boolean onlyAvailable,
-                                                  @RequestParam String sort,
+                                                  @RequestParam(defaultValue = "false") Boolean onlyAvailable,
+                                                  @RequestParam String sort, // Вариант сортировки: по дате события или по количеству просмотров Available values : EVENT_DATE, VIEWS
                                                   @PositiveOrZero @RequestParam(defaultValue = "0") Integer from,
                                                   @Positive @RequestParam(defaultValue = "10") Integer size) {
+
         log.info("Получаем все события с учетом фильтрации: text={}, categories={}, paid={}, rangeStart={}, " +
                         "rangeEnd={}, onlyAvailable={}, sort={}, from={}, size={}",
                 text, categories, paid, rangeStart, rangeEnd, onlyAvailable, sort, from, size);
@@ -54,6 +55,7 @@ public class EventPublicController {
      */
     @GetMapping("/{id}")
     public EventFullDto getPublicEventById(@PathVariable long id) {
+
         log.info("Получаем событие: id={}", id);
         return eventService.getPublicEventById(id);
     }

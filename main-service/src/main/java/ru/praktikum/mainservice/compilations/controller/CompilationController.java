@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.*;
 import ru.praktikum.mainservice.compilations.model.dto.CompilationDto;
 import ru.praktikum.mainservice.compilations.service.CompilationService;
 
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 @Slf4j
@@ -21,9 +23,10 @@ public class CompilationController {
     */
     @GetMapping()
     public List<CompilationDto> getAllCompilations(@RequestParam Boolean pinned,
-                                                   @RequestParam Integer from,
-                                                   @RequestParam Integer size) {
-        log.info("Получаем все подборки pinned={}, from={}, size={}", pinned, from, size);
+                                                   @PositiveOrZero @RequestParam(defaultValue = "0") Integer from,
+                                                   @Positive @RequestParam(defaultValue = "10") Integer size) {
+
+        log.info("Получаем все подборки с параметрами: pinned={}, from={}, size={}", pinned, from, size);
         return compilationService.getAllCompilations(pinned, from, size);
     }
 
@@ -32,6 +35,7 @@ public class CompilationController {
     */
     @GetMapping("/{compId}")
     public CompilationDto getCompilationById(@PathVariable long compId) {
+
         log.info("Получаем подборку compId={}", compId);
         return compilationService.getCompilationById(compId);
     }

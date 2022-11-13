@@ -34,6 +34,7 @@ public class RequestController {
     @PostMapping("/{userId}/requests")
     public ParticipationRequestDto createRequest(@PathVariable long userId,
                                                  @RequestParam long eventId) {
+
         log.info("Пользователь userId={} создает новый запрос а событие eventId={}", userId, eventId);
         return requestService.createRequest(userId, eventId);
     }
@@ -44,6 +45,7 @@ public class RequestController {
     @PatchMapping("/{userId}/requests/{requestId}/cancel")
     public ParticipationRequestDto cancelOwnRequest(@PathVariable long userId,
                                                     @PathVariable long requestId) {
+
         log.info("Пользователь userId={} отменяет свой запрос requestId={} на событие", userId, requestId);
         return requestService.cancelOwnRequest(userId, requestId);
     }
@@ -53,6 +55,7 @@ public class RequestController {
     */
     @GetMapping("/{userId}/requests")
     public List<ParticipationRequestDto> getRequests(@PathVariable long userId) {
+
         log.info("Пользователь userId={} получает все свои запросы", userId);
         return requestService.getRequests(userId);
     }

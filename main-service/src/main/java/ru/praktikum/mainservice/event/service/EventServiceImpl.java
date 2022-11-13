@@ -4,9 +4,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import ru.praktikum.mainservice.event.enums.StateEnum;
 import ru.praktikum.mainservice.category.model.Category;
 import ru.praktikum.mainservice.category.repository.CategoryStorage;
+import ru.praktikum.mainservice.event.enums.StateEnum;
 import ru.praktikum.mainservice.event.mapper.EventMapper;
 import ru.praktikum.mainservice.event.model.Event;
 import ru.praktikum.mainservice.event.model.EventState;
@@ -102,9 +102,7 @@ public class EventServiceImpl implements EventService {
         Event currentEvent = checkEventAvailableInDb(updateEventRequest.getEventId());
 
         // Проверяем что событие принадлежит текущему пользователю;
-        if (!currentEvent.getInitiator().equals(currentUser)) {
-            throw new BadRequestException(String.format("Событие eventId=%s не принадлежит данному пользователю userId=%s", currentEvent.getId(), userId));
-        }
+        checkOwnEvent(currentEvent, currentUser);
 
         // Находим EventState события, чтобы проверить статус;
         EventState eventState = checkEventStateAvailableInDb(currentEvent.getId());
@@ -125,6 +123,7 @@ public class EventServiceImpl implements EventService {
 
         // Обновляем данные в БД;
         eventStorage.save(currentEvent);
+
         EventFullDto eventFullDto = EventMapper.fromEventToEventFullDto(currentEvent);
 
         // Если State был CANCELED, то меняем на PENDING, сохраняем изменения для eventState;
@@ -135,6 +134,7 @@ public class EventServiceImpl implements EventService {
 
         // Сетим State так как он нужен EventFullDto;
         eventFullDto.setState(StateEnum.PENDING);
+
         log.info("Событие изменено: {}", eventFullDto);
         return eventFullDto;
     }
@@ -144,13 +144,14 @@ public class EventServiceImpl implements EventService {
     */
     @Override
     public List<EventFullDto> getAllEventsByCurrentUser(long userId, Integer from, Integer size) {
+
         // Проверяем, что пользователь существует;
         User user = checkUserAvailableInDb(userId);
 
         // Собираем все события принадлежащие пользователю;
         List<Event> events = eventStorage.findEventByInitiator_Id(userId, PageRequest.of(from / size, size)).toList();
 
-        log.info("Получение пользователем userId={} списка созданных событий: eventsSize={}", userId, events.size());
+        log.info("Получение пользователем userId={} списка созданных событий: eventsSize={}", user.getId(), events.size());
         return events.stream().map(EventMapper::fromEventToEventFullDto).collect(Collectors.toList());
     }
 
@@ -159,6 +160,7 @@ public class EventServiceImpl implements EventService {
     */
     @Override
     public EventFullDto getEventByIdByCurrentUser(long userId, long eventId) {
+
         // Проверяем, что пользователь существует;
         User user = checkUserAvailableInDb(userId);
 
@@ -179,6 +181,7 @@ public class EventServiceImpl implements EventService {
      */
     @Override
     public EventFullDto cancelEventByCurrentUser(long userId, long eventId) {
+
         // Проверяем, что пользователь существует;
         User user = checkUserAvailableInDb(userId);
 
@@ -203,6 +206,7 @@ public class EventServiceImpl implements EventService {
 
         // Сетим статус отмены;
         result.setState(StateEnum.CANCELED);
+
         log.info("Отмена пользователем userId={} своего события: result={}", userId, result);
         return result;
     }
@@ -212,6 +216,7 @@ public class EventServiceImpl implements EventService {
     */
     @Override
     public List<ParticipationRequestDto> getRequestsByEventByCurrentUser(long userId, long eventId) {
+
         // Проверяем, что пользователь существует;
         User user = checkUserAvailableInDb(userId);
 
@@ -241,6 +246,7 @@ public class EventServiceImpl implements EventService {
      */
     @Override
     public ParticipationRequestDto acceptRequestOnEventByCurrentUser(long userId, long eventId, long reqId) {
+
         // Проверяем, что пользователь существует;
         User user = checkUserAvailableInDb(userId);
 
@@ -255,11 +261,9 @@ public class EventServiceImpl implements EventService {
 
         ParticipationRequestDto pRDto = RequestMapper.fromRequestToParticipationRequestDto(request);
 
-        // Проверяем лимит заявок для участия в событии и модерацию;
-        Boolean checkResult = checkRequestLimitAndModeration(event);
 
-        // Если нет лимита и отключена модерация;
-        if (checkResult) {
+        // Проверяем лимит заявок для участия в событии и модерацию, если нет лимита и отключена модерация;
+        if (checkRequestLimitAndModeration(event)) {
             // Cетим статус и сохраняем обновленные данные в БД;
             request.setStatus("CONFIRMED");
             requestStorage.save(request);
@@ -278,6 +282,7 @@ public class EventServiceImpl implements EventService {
         }
 
         pRDto.setStatus("CONFIRMED");
+
         log.info("Пользователь userId={} принял запрос reqId={} на событие: eventId={}",
                 userId, reqId, eventId);
         return pRDto;
@@ -288,6 +293,7 @@ public class EventServiceImpl implements EventService {
     */
     @Override
     public ParticipationRequestDto cancelRequestOnEventByCurrentUser(long userId, long eventId, long reqId) {
+
         // Проверяем, что пользователь существует;
         User user = checkUserAvailableInDb(userId);
 
@@ -320,7 +326,7 @@ public class EventServiceImpl implements EventService {
      */
     @Override
     public List<EventShortDto> getAllPublicEvents(String text,
-                                                  int[] categories,
+                                                  Long[] categories,
                                                   Boolean paid,
                                                   String rangeStart,
                                                   String rangeEnd,
@@ -355,6 +361,7 @@ public class EventServiceImpl implements EventService {
                                            String rangeEnd,
                                            Integer from,
                                            Integer size) {
+
         // Создаем из стрингов LocalDateTime;
         LocalDateTime start = LocalDateTime.parse(rangeStart, EventMapper.FORMATTER_EVENT_DATE);
         LocalDateTime end = LocalDateTime.parse(rangeEnd, EventMapper.FORMATTER_EVENT_DATE);
@@ -380,6 +387,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public EventFullDto updateEventByAdmin(long eventId, AdminUpdateEventRequest adminUpdateEventRequest) {
+
         // Проверяем, что событие существует;
         Event event = checkEventAvailableInDb(eventId);
 
@@ -399,14 +407,81 @@ public class EventServiceImpl implements EventService {
         return EventMapper.fromEventToEventFullDto(event);
     }
 
+    /*
+    PUT EVENT ADMIN - Публикация события.
+        Обратите внимание:
+            + дата начала события должна быть не ранее чем за час от даты публикации;
+            + событие должно быть в состоянии ожидания публикации;
+    */
+    @Override
+    public EventFullDto eventPublishByAdmin(long eventId) {
+
+        // Проверяем, что событие существует;
+        Event currentEvent = checkEventAvailableInDb(eventId);
+
+        // Чтобы узнать статус события, нам нужен EventState;
+        EventState eventState = checkEventStateAvailableInDb(eventId);
+
+        // Проверяем статус события;
+        checkStatePending(eventState);
+
+        // Проверяем дату начала события и публикации, если все в порядке, то сетим и сохраняем;
+        LocalDateTime publishedOn = LocalDateTime.now();
+        checkEventStartDate(currentEvent.getEventDate(), publishedOn);
+        currentEvent.setPublishedOn(publishedOn);
+        eventStorage.save(currentEvent);
+
+        // Возвращаемый объект;
+        EventFullDto result = EventMapper.fromEventToEventFullDto(currentEvent);
+
+        // Сетим новые данные и сохраняем в БД;
+        eventState.setState(StateEnum.PENDING.toString());
+        eventStateStorage.save(eventState);
+        result.setState(StateEnum.PUBLISHED);
+
+        log.info("Админ одобрил событие eventId={} теперь оно опубликовано eventStatus={}:", eventId, eventState.getState());
+        return result;
+    }
+
+    /*
+    PUT EVENT ADMIN - Отклонение события.
+        Обратите внимание:
+            + событие не должно быть опубликовано;
+    */
+    @Override
+    public EventFullDto eventRejectByAdmin(long eventId) {
+
+        // Проверяем, что событие существует;
+        Event currentEvent = checkEventAvailableInDb(eventId);
+
+        // Чтобы узнать статус события, нам нужен EventState;
+        EventState eventState = checkEventStateAvailableInDb(eventId);
+
+        // Проверяем статус события;
+        checkStatePending(eventState);
+
+        // Возвращаемый объект;
+        EventFullDto result = EventMapper.fromEventToEventFullDto(currentEvent);
+
+        // Сетим новые данные и сохраняем в БД;
+        eventState.setState(StateEnum.CANCELED.toString());
+        eventStateStorage.save(eventState);
+        result.setState(StateEnum.CANCELED);
+
+        log.info("Админ отклонил событие eventId={} теперь оно отменено eventStatus={}:", eventId, eventState.getState());
+        return result;
+    }
+
     //TODO Посмотреть что можно сделать с этими методами
     private User checkUserAvailableInDb(long userId) {
+
         return userStorage.findById(userId)
                 .orElseThrow(() -> new NotFoundException(String
                         .format("Пользователь не найден в БД: userId=%s", userId)));
     }
 
     private Category checkCategoryAvailableInDb(long catId) {
+
         return categoryStorage.findById(catId)
                 .orElseThrow(() -> new NotFoundException(String
                         .format("Категория не найдена: catId=%s", catId)));
@@ -414,17 +489,20 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public EventState checkEventStateAvailableInDb(long eventId) {
+
         return eventStateStorage.findEventStateByEvent_Id(eventId).orElseThrow(() -> new NotFoundException(String
                 .format("EventState не найден: eventId=%s", eventId)));
     }
 
     private Request checkRequestAvailableInDb(long reqId) {
+
         return requestStorage.findById(reqId).orElseThrow(() -> new NotFoundException(String
                 .format("Запрос не найден: reqId=%s", reqId)));
     }
 
     @Override
     public Event checkEventAvailableInDb(long eventId) {
+
         return eventStorage.findById(eventId)
                 .orElseThrow(() -> new NotFoundException(String
                         .format("Событие не найдено: eventId=%s", eventId)));
@@ -434,6 +512,7 @@ public class EventServiceImpl implements EventService {
     Метод для проверки инициатора события, что событие принадлежит именно этому пользователю;
      */
     private void checkOwnEvent(Event event, User user) {
+
         if (!event.getInitiator().equals(user)) {
             throw new BadRequestException(String
                     .format("Пользователю userId=%s не принадлежит данное событие eventId=%s", user.getId(), event.getId()));
@@ -445,11 +524,24 @@ public class EventServiceImpl implements EventService {
     Метод проверяет статус у EventState;
      */
     private void checkStatePending(EventState eventState) {
+
         if (!eventState.getState().equals(StateEnum.PENDING.toString())) {
             throw new BadRequestException(String
                     .format("Событие имеет статус отличный от модерации state=%s", eventState.getState()));
         }
         log.info("Проверяем статус у eventStateId={} : state={}", eventState.getId(), eventState.getState());
+    }
+
+    /*
+    Метод проверяет время начала события и время публикации;
+     */
+    private void checkEventStartDate(LocalDateTime eventDate, LocalDateTime publishedOn) {
+
+        if (!eventDate.isAfter(publishedOn.plusHours(1))) {
+            throw new BadRequestException(String
+                    .format("Событие не может быть опубликовано, так как дата начала eventDate=%s менее чем через" +
+                            " час после даты публикации publishedOn=%s", eventDate, publishedOn));
+        }
     }
 
     /*
@@ -471,11 +563,9 @@ public class EventServiceImpl implements EventService {
         } else if (totalLimit == currentLimit + 1) {
             return false;
             // Если лимит исчерпан;
-        } else  {
-            throw new BadRequestException(String.format("Лимит заявок на событие превышен: eventId={}", event.getId()));
+        } else {
+            throw new BadRequestException(String.format("Лимит заявок на событие превышен: eventId=%s", event.getId()));
         }
     }
-
-
 
 }

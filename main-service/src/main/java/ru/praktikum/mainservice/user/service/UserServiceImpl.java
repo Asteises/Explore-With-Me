@@ -26,15 +26,19 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public UserDto createUser(UserDto userDto) {
+
         User user = UserMapper.userDtoToUser(userDto);
         user = userStorage.save(user);
+
         log.info("Создан новый пользователь: {}", user);
         return UserMapper.userToUserDto(user);
     }
 
     @Override
     public List<UserDto> getUsersById(List<Long> ids, Integer from, Integer size) {
+
         List<User> users;
+
         if (ids.isEmpty()) {
             users = userStorage.findAll();
             log.info("Получаем всех пользователей: from={}, size={}", from, size);
@@ -43,6 +47,7 @@ public class UserServiceImpl implements UserService {
                     .stream().toList();
             log.info("Получаем всех пользователей: from={}, size={}, users={}", from, size, users.toString());
         }
+
         return users.stream()
                 .map(UserMapper::userToUserDto)
                 .collect(Collectors.toList());
@@ -51,13 +56,16 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void deleteUser(long userId) {
+
         User user = checkUserAvailableInDb(userId);
+
         log.info("Пользователь удален: userId={}", userId);
         userStorage.delete(user);
     }
 
     @Override
     public User checkUserAvailableInDb(long userId) {
+
         log.info("Проверяем наличие пользователя: userId={}", userId);
         return userStorage.findById(userId)
                 .orElseThrow(() -> new NotFoundException(String.format("Пользователь не найден: userId=%s", userId)));

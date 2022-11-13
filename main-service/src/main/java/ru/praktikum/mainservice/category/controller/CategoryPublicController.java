@@ -28,7 +28,8 @@ public class CategoryPublicController {
     @GetMapping
     public List<CategoryDto> getAllCategories(@PositiveOrZero @RequestParam(defaultValue = "0") Integer from,
                                               @Positive @RequestParam(defaultValue = "10") Integer size) {
-        log.info("Получаем все категории: from={}, size={}", from, size);
+
+        log.info("Получаем все категории с параметрами: from={}, size={}", from, size);
         return categoryService.getAllCategories(from, size);
     }
 
@@ -37,6 +38,7 @@ public class CategoryPublicController {
      */
     @GetMapping("/{catId}")
     public CategoryDto getCategoryById(@PathVariable long catId) {
+
         log.info("Получаем категорию: catId={}", catId);
         return categoryService.getCategoryById(catId);
     }

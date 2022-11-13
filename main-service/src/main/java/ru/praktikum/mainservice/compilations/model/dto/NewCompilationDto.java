@@ -20,11 +20,11 @@ import java.util.List;
 public class NewCompilationDto {
     @JsonProperty("events")
     @Valid
-    private List<Long> events = null;
+    private List<Long> events;
 
     @JsonProperty("pinned")
-    private Boolean pinned = false;
+    private Boolean pinned;
 
     @JsonProperty("title")
-    private String title = null;
+    private String title;
 }

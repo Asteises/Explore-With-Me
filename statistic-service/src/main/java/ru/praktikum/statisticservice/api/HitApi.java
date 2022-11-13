@@ -5,44 +5,19 @@
  */
 package io.swagger.api;
 
-import io.swagger.model.EndpointHit;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.bind.annotation.CookieValue;
-
-import javax.validation.Valid;
-import javax.validation.constraints.*;
-import java.util.List;
-import java.util.Map;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2022-11-08T15:34:45.022Z[GMT]")
 @Validated
 public interface HitApi {
 
-    @Operation(summary = "Сохранение информации о том, что к эндпоинту был запрос", description = "Сохранение информации о том, что на uri конкретного сервиса был отправлен запрос пользователем. Название сервиса, uri и ip пользователя указаны в теле запроса.", tags={ "StatsController" })
-    @ApiResponses(value = { 
-        @ApiResponse(responseCode = "200", description = "Информация сохранена") })
-    @RequestMapping(value = "/hit",
-        consumes = { "application/json" }, 
-        method = RequestMethod.POST)
-    ResponseEntity<Void> hit(@Parameter(in = ParameterIn.DEFAULT, description = "данные запроса", required=true, schema=@Schema()) @Valid @RequestBody EndpointHit body);
+//    @Operation(summary = "Сохранение информации о том, что к эндпоинту был запрос", description = "Сохранение информации о том, что на uri конкретного сервиса был отправлен запрос пользователем. Название сервиса, uri и ip пользователя указаны в теле запроса.", tags={ "StatsController" })
+//    @ApiResponses(value = {
+//        @ApiResponse(responseCode = "200", description = "Информация сохранена") })
+//    @RequestMapping(value = "/hit",
+//        consumes = { "application/json" },
+//        method = RequestMethod.POST)
+//    ResponseEntity<Void> hit(@Parameter(in = ParameterIn.DEFAULT, description = "данные запроса", required=true, schema=@Schema()) @Valid @RequestBody EndpointHit body);
 
 }
 

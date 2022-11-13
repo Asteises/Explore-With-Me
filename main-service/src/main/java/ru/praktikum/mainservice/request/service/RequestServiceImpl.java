@@ -133,7 +133,7 @@ public class RequestServiceImpl implements RequestService {
      */
     private void checkEventStatusNotPublished(long eventId) {
         EventState eventState = eventService.checkEventStateAvailableInDb(eventId);
-        if(!eventState.getState().equals("PUBLISHED")) {
+        if (!eventState.getState().equals("PUBLISHED")) {
             throw new BadRequestException(String.format("Запрос не может быть создан на неопубликованное " +
                     "событие eventId={}", eventId));
         }

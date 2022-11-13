@@ -2,8 +2,6 @@ package ru.praktikum.mainservice.event.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import ru.praktikum.mainservice.event.model.Event;
 import ru.praktikum.mainservice.event.model.EventState;
 import ru.praktikum.mainservice.event.model.dto.AdminUpdateEventRequest;
@@ -13,8 +11,6 @@ import ru.praktikum.mainservice.event.model.dto.NewEventDto;
 import ru.praktikum.mainservice.request.model.dto.ParticipationRequestDto;
 import ru.praktikum.mainservice.request.model.dto.UpdateEventRequest;
 
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 @Service
@@ -37,7 +33,7 @@ public interface EventService {
     ParticipationRequestDto cancelRequestOnEventByCurrentUser(long userId, long eventId, long reqId);
 
     List<EventShortDto> getAllPublicEvents(String text,
-                                           int[] categories,
+                                           Long[] categories,
                                            Boolean paid,
                                            String rangeStart,
                                            String rangeEnd,
@@ -63,4 +59,8 @@ public interface EventService {
                                     Integer size);
 
     EventFullDto updateEventByAdmin(long eventId, AdminUpdateEventRequest adminUpdateEventRequest);
+
+    EventFullDto eventPublishByAdmin(long eventId);
+
+    EventFullDto eventRejectByAdmin(long eventId);
 }
