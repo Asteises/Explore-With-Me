@@ -543,6 +543,15 @@ public class EventServiceImpl implements EventService {
                             " час после даты публикации publishedOn=%s", eventDate, publishedOn));
         }
     }
+    /*
+    Метод получает все события по пришедшим id;
+     */
+    @Override
+    public List<Event> getEventsByIds(List<Long> ids) {
+
+        log.info("Получаем все события по ids={}", ids.toString());
+        return eventStorage.findEventsByIdIn(ids);
+    }
 
     /*
     Метод проверяет количество одобренных заявок;

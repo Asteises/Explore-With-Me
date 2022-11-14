@@ -16,4 +16,6 @@ public interface EventStorage extends JpaRepository<Event, Long> {
     Optional<Event> findEventByCategory_Id(long catId);
 
     Page<Event> findAllByIdIn(List<Long> eventIds, Pageable pageable);
+
+    List<Event> findEventsByIdIn(List<Long> eventIds);
 }

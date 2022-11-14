@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS events
     request_moderation BOOLEAN DEFAULT TRUE,
     CONSTRAINT events_pk PRIMARY KEY (id),
     CONSTRAINT events_category_id_fk FOREIGN KEY (category_id) REFERENCES categories (id),
-    CONSTRAINT events_users_id_fk FOREIGN KEY (initiator_id) REFERENCES users (id)
+    CONSTRAINT events_users_id_fk FOREIGN KEY (initiator_id) REFERENCES users (id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS event_states
@@ -44,8 +44,8 @@ CREATE TABLE IF NOT EXISTS event_states
     event_id BIGINT,
     state VARCHAR(30) NOT NULL,
     created_on TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    constraint event_states_PK primary key (id),
-    constraint event_states_event_id_FK foreign key (event_id) references events
+    CONSTRAINT event_states_PK PRIMARY KEY (id),
+    CONSTRAINT event_states_event_id_FK FOREIGN KEY (event_id) REFERENCES events ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS requests
@@ -56,8 +56,8 @@ CREATE TABLE IF NOT EXISTS requests
     requester_id BIGINT NOT NULL,
     created TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT requests_pk PRIMARY KEY (id),
-    CONSTRAINT requests_event_id_fk FOREIGN KEY (event_id) REFERENCES events (id),
-    CONSTRAINT requests_requester_id_fk FOREIGN KEY (requester_id) REFERENCES users (id),
+    CONSTRAINT requests_event_id_fk FOREIGN KEY (event_id) REFERENCES events (id) ON DELETE CASCADE,
+    CONSTRAINT requests_requester_id_fk FOREIGN KEY (requester_id) REFERENCES users (id) ON DELETE CASCADE,
     unique (requester_id, event_id)
 );
 
@@ -73,8 +73,8 @@ CREATE TABLE IF NOT EXISTS compilation_events
 (
     comp_id  BIGINT,
     event_id BIGINT,
-    constraint compilation_events_PK primary key (comp_id, event_id),
-    constraint compilation_events_comp_id_FK foreign key (comp_id) references compilations,
-    constraint compilation_events_event_id_FK foreign key (event_id) references events
+    CONSTRAINT compilation_events_PK PRIMARY KEY (comp_id, event_id),
+    CONSTRAINT compilation_events_comp_id_FK FOREIGN KEY (comp_id) REFERENCES compilations ON DELETE CASCADE,
+    CONSTRAINT compilation_events_event_id_FK FOREIGN KEY (event_id) REFERENCES events
 );
 

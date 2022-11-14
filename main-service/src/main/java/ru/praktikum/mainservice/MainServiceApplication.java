@@ -58,8 +58,8 @@ public class MainServiceApplication {
 
     Admin: Подборки событий
         + POST /admin/compilations - Добавление новой подборки
-        - DELETE /admin/compilations/{compId} - Удаление подборки
-        - DELETE /admin/compilations/{compId}/events/{eventId} - Удалить событие из подборки
+        + DELETE /admin/compilations/{compId} - Удаление подборки
+        + DELETE /admin/compilations/{compId}/events/{eventId} - Удалить событие из подборки
         - PATCH /admin/compilations/{compId}/events/{eventId} - Добавить событие в подборку
         - DELETE /admin/compilations/{compId}/pin - Открепить подборку на главной странице
         - PATCH /admin/compilations/{compId}/pin - Закрепить подборку на главной странице

@@ -58,6 +58,8 @@ public interface EventService {
                                     Integer from,
                                     Integer size);
 
+    List<Event> getEventsByIds(List<Long> ids);
+
     EventFullDto updateEventByAdmin(long eventId, AdminUpdateEventRequest adminUpdateEventRequest);
 
     EventFullDto eventPublishByAdmin(long eventId);

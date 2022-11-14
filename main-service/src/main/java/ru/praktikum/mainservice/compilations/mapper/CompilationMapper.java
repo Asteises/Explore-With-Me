@@ -3,8 +3,10 @@ package ru.praktikum.mainservice.compilations.mapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.praktikum.mainservice.compilations.model.Compilation;
+import ru.praktikum.mainservice.compilations.model.CompilationEvent;
 import ru.praktikum.mainservice.compilations.model.dto.CompilationDto;
 import ru.praktikum.mainservice.compilations.model.dto.NewCompilationDto;
+import ru.praktikum.mainservice.event.model.Event;
 
 import java.util.ArrayList;
 
@@ -32,5 +34,15 @@ public class CompilationMapper {
         compilation.setTitle(newCompilationDto.getTitle());
 
         return compilation;
+    }
+
+    public static CompilationEvent toCompilationEvent(Compilation compilation, Event event) {
+
+        CompilationEvent compilationEvent = new CompilationEvent();
+
+        compilationEvent.setComp(compilation);
+        compilationEvent.setEvent(event);
+
+        return compilationEvent;
     }
 }
