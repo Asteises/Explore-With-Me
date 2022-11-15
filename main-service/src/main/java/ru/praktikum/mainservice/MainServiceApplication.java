@@ -11,7 +11,13 @@ public class MainServiceApplication {
     }
 
     // TODO Какие таблицы лучше будет проиндексировать?
-    // TODO Что уже сделано:
+    // TODO Разобраться с модулем статистики, почему в нем ошибки и как их исправить;
+
+    // TODO Нарисовать архитектуру приложения и каждой из БД;
+    // TODO Настроить 2 БД и докер;
+    // TODO Сделать ПР и выложить в Яндекс презентацию;
+
+    // TODO Что уже сделано из логики:
 	/*
 	Public: События
 	    - GET /events - Получение событий с возможностью фильтрации
@@ -60,9 +66,9 @@ public class MainServiceApplication {
         + POST /admin/compilations - Добавление новой подборки
         + DELETE /admin/compilations/{compId} - Удаление подборки
         + DELETE /admin/compilations/{compId}/events/{eventId} - Удалить событие из подборки
-        - PATCH /admin/compilations/{compId}/events/{eventId} - Добавить событие в подборку
-        - DELETE /admin/compilations/{compId}/pin - Открепить подборку на главной странице
-        - PATCH /admin/compilations/{compId}/pin - Закрепить подборку на главной странице
+        + PATCH /admin/compilations/{compId}/events/{eventId} - Добавить событие в подборку
+        -+ DELETE /admin/compilations/{compId}/pin - Открепить подборку на главной странице
+        -+ PATCH /admin/compilations/{compId}/pin - Закрепить подборку на главной странице
 	 */
 
 }

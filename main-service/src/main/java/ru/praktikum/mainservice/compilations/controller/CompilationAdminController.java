@@ -47,4 +47,24 @@ public class CompilationAdminController {
         log.info("Удаляем событие eventId={} из подборки: compId={}", eventId, compId);
         compilationService.deleteEventFromCompilation(compId, eventId);
     }
+
+    /*
+    PATCH COMPILATION - Добавить событие в подборку
+    */
+    @PatchMapping("/{compId}/events/{eventId}")
+    public void addEventInCompilation(@PathVariable long compId,
+                                      @PathVariable long eventId) {
+
+        log.info("Добавляем событие eventId={} в подборку: compId={}", eventId, compId);
+        compilationService.addEventInCompilation(compId, eventId);
+    }
+
+    /*
+    DELETE COMPILATION - Открепить подборку на главной странице
+    */
+    @DeleteMapping("/{compId}/pin")
+    public void unpinCompilationAtHomePage(@PathVariable long compId) {
+
+        log.info("Открепляем подборку на главной странице: compId={}", compId);
+    }
 }

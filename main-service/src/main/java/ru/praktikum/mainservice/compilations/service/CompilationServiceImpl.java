@@ -162,7 +162,38 @@ public class CompilationServiceImpl implements CompilationService {
         Event event = eventService.checkEventAvailableInDb(eventId);
 
         // И удаляем его из БД;
+        log.info("Удаляем событие eventId={} из подборки compId={}", eventId, compId);
         compilationEventStorage.deleteCompilationEventByEventAndComp(event, compilation);
+    }
+
+    /*
+    PATCH COMPILATION - Добавить событие в подборку
+    */
+    @Override
+    public void addEventInCompilation(long compId, long eventId) {
+
+        // Проверяем существование подборки;
+        Compilation compilation = checkCompilationAvailableInBd(compId);
+
+        // Проверяем существование события;
+        Event event = eventService.checkEventAvailableInDb(eventId);
+
+        // Создаем новый CompilationEvent, чтобы сохранить связь события и подборки;
+        CompilationEvent compilationEvent = new CompilationEvent();
+
+        // Сетим данные;
+        compilationEvent.setComp(compilation);
+        compilationEvent.setEvent(event);
+
+        // Сохраняем в БД;
+        log.info("Добавляем событие eventId={} в подборку compId={}: compilationEvent={}", eventId, compId, compilationEvent);
+        compilationEventStorage.save(compilationEvent);
+    }
+
+    @Override
+    public void unpinCompilationAtHomePage(long compId) {
+
+        //TODO Вот это я не понял
     }
 
 
