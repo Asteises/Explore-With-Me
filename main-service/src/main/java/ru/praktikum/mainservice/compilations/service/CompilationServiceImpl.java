@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.praktikum.mainservice.compilations.mapper.CompilationMapper;
 import ru.praktikum.mainservice.compilations.model.Compilation;
 import ru.praktikum.mainservice.compilations.model.CompilationEvent;
@@ -15,6 +16,7 @@ import ru.praktikum.mainservice.event.mapper.EventMapper;
 import ru.praktikum.mainservice.event.model.Event;
 import ru.praktikum.mainservice.event.model.dto.EventShortDto;
 import ru.praktikum.mainservice.event.service.EventService;
+import ru.praktikum.mainservice.exception.BadRequestException;
 import ru.praktikum.mainservice.exception.NotFoundException;
 
 import java.util.ArrayList;
@@ -108,7 +110,6 @@ public class CompilationServiceImpl implements CompilationService {
         List<Event> events = eventService.getEventsByIds(newCompilationDto.getEvents());
 
         // Сохраняем подборки вместе с событиями в CompilationEvent;
-        //TODO Не пойму правильно ли я сохраняю события в подборках?
         for (Event event : events) {
 
             // Проверяем каждое событие на существование;
@@ -134,36 +135,43 @@ public class CompilationServiceImpl implements CompilationService {
     DELETE COMPILATION - Удаление подборки
      */
     @Override
+    @Transactional
     public void deleteCompilation(long compId) {
 
         // Проверяем существование подборки;
         Compilation compilation = checkCompilationAvailableInBd(compId);
 
-        // Проверяем существование CompilationEvent;
-        CompilationEvent compilationEvent = checkCompilationEventByComp(compilation);
+        // Собираем все события участвующие в подборке;
+        List<CompilationEvent> compilationsEvents = compilationEventStorage.findAllByComp(compilation);
 
-        // Удаляем CompilationEvent;
-        compilationEventStorage.delete(compilationEvent);
+        // Удаляем все события из подборки;
+        compilationEventStorage.deleteAll(compilationsEvents);
 
+        // Удаляем подборку;
         log.info("Удаляем подборку compId={}", compId);
         compilationStorage.delete(compilation);
     }
 
     /*
-    DELETE COMPILATION - Удаление события из подборки
+    DELETE COMPILATION - Удаление событие из подборки
     */
     @Override
     public void deleteEventFromCompilation(long compId, long eventId) {
 
         // Проверяем существование подборки;
-        Compilation compilation = checkCompilationAvailableInBd(compId);
+        checkCompilationAvailableInBd(compId);
 
         // Проверяем существование события;
-        Event event = eventService.checkEventAvailableInDb(eventId);
+        eventService.checkEventAvailableInDb(eventId);
+
+        // Проверяем есть ли в подборке это событие;
+        CompilationEvent compilationEvent = compilationEventStorage
+                .findByEvent_IdAndAndComp_Id(eventId, compId)
+                .orElseThrow(() -> new BadRequestException("CompilationEvent не найден"));
 
         // И удаляем его из БД;
         log.info("Удаляем событие eventId={} из подборки compId={}", eventId, compId);
-        compilationEventStorage.deleteCompilationEventByEventAndComp(event, compilation);
+        compilationEventStorage.delete(compilationEvent);
     }
 
     /*
@@ -190,10 +198,34 @@ public class CompilationServiceImpl implements CompilationService {
         compilationEventStorage.save(compilationEvent);
     }
 
+    /*
+    DELETE COMPILATION - Открепить подборку на главной странице
+    */
     @Override
     public void unpinCompilationAtHomePage(long compId) {
 
-        //TODO Вот это я не понял
+        // Проверяем существование подборки;
+        Compilation compilation = checkCompilationAvailableInBd(compId);
+
+        // Открепляем;
+        compilation.setPinned(false);
+        log.info("Открепили подборку compId={} : {}", compId, compilation.getPinned());
+        compilationStorage.save(compilation);
+    }
+
+    /*
+    PATCH COMPILATION - Закрепить подборку на главной странице
+    */
+    @Override
+    public void pinCompilationAtHomePage(long compId) {
+
+        // Проверяем существование подборки;
+        Compilation compilation = checkCompilationAvailableInBd(compId);
+
+        // Прикрепляем;
+        compilation.setPinned(true);
+        log.info("Закрепили подборку compId={} : {}", compId, compilation.getPinned());
+        compilationStorage.save(compilation);
     }
 
 
@@ -205,16 +237,6 @@ public class CompilationServiceImpl implements CompilationService {
         log.info("Проверяем существование подборки compId={}", compId);
         return compilationStorage.findById(compId).orElseThrow(() -> new NotFoundException(
                 String.format("Подборка не найдена: compId=%s", compId)));
-    }
-
-    /*
-    Метод для проверки наличия CompilationEvent в БД по подборке;
-    */
-    private CompilationEvent checkCompilationEventByComp(Compilation compilation) {
-
-        log.info("Проверяем существование CompilationEvent с параметрами: compilation={}", compilation);
-        return compilationEventStorage.findCompilationEventByComp(compilation).orElseThrow(() -> new NotFoundException(
-                String.format("CompilationEvent не найден, параметры: compilation=%s", compilation)));
     }
 
 }

@@ -66,5 +66,16 @@ public class CompilationAdminController {
     public void unpinCompilationAtHomePage(@PathVariable long compId) {
 
         log.info("Открепляем подборку на главной странице: compId={}", compId);
+        compilationService.unpinCompilationAtHomePage(compId);
+    }
+
+    /*
+    PATCH COMPILATION - Закрепить подборку на главной странице
+    */
+    @PatchMapping("/{compId}/pin")
+    public void pinCompilationAtHomePage(@PathVariable long compId) {
+
+        log.info("Закрепляем подборку на главной странице: compId={}", compId);
+        compilationService.pinCompilationAtHomePage(compId);
     }
 }

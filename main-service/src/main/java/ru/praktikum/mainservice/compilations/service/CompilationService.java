@@ -22,4 +22,6 @@ public interface CompilationService {
     void addEventInCompilation(long compId, long eventId);
 
     void unpinCompilationAtHomePage(long compId);
+
+    void pinCompilationAtHomePage(long compId);
 }

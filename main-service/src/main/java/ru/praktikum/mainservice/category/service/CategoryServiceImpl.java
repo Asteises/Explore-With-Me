@@ -85,8 +85,9 @@ public class CategoryServiceImpl implements CategoryService {
         Category category = checkCategory(catId);
 
         // Проверяем есть ли связанные с категорией события;
-        eventStorage.findEventByCategory_Id(catId).orElseThrow(() -> new BadRequestException(
-                "Категорию нельзя удалить, так как есть связанные с ней события"));
+        if (eventStorage.findEventByCategory_Id(catId).isPresent()) {
+            throw  new BadRequestException("Категорию нельзя удалить, так как есть связанные с ней события");
+        }
 
         log.info("Категория удалена: category={}", category.toString());
         categoryStorage.deleteById(catId);

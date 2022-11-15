@@ -9,6 +9,7 @@ import ru.praktikum.mainservice.event.service.EventService;
 
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
