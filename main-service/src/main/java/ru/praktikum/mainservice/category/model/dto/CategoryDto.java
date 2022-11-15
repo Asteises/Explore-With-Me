@@ -20,10 +20,10 @@ import javax.validation.constraints.NotNull;
 public class CategoryDto {
 
     @JsonProperty("id")
-    private Long id = null;
+    private Long id;
 
     @JsonProperty("name")
     @NotNull
     @NotBlank
-    private String name = null;
+    private String name;
 }

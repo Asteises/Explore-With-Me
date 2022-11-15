@@ -108,7 +108,7 @@ public class EventPrivateController {
             нельзя подтвердить заявку, если уже достигнут лимит по заявкам на данное событие;
             если при подтверждении данной заявки, лимит заявок для события исчерпан, то все неподтверждённые заявки необходимо отклонить;
      */
-    @PatchMapping("/{userId}/events/{eventId}/requests/{reqId}/confim")
+    @PatchMapping("/{userId}/events/{eventId}/requests/{reqId}/confirm")
     public ParticipationRequestDto acceptRequestOnEventByCurrentUser(@PathVariable long userId,
                                                                      @PathVariable long eventId,
                                                                      @PathVariable long reqId) {

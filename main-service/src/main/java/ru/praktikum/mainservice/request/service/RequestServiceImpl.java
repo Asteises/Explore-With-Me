@@ -66,9 +66,9 @@ public class RequestServiceImpl implements RequestService {
 
         // Проверяем есть ли у события пре-модерация;
         if (event.getRequestModeration()) {
-            request.setStatus("CONFIRMED");
-        } else {
             request.setStatus("PENDING");
+        } else {
+            request.setStatus("CONFIRMED");
         }
 
         // Сохраняем запрос в БД и обновляем, чтобы записать id;

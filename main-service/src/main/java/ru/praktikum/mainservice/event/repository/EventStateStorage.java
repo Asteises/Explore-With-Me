@@ -13,7 +13,7 @@ public interface EventStateStorage extends JpaRepository<EventState, Long> {
 
     Optional<EventState> findEventStateByEvent_Id(long eventId);
 
-    List<EventState> findAllByEvent_Initiator_IdInAndEvent_Category_IdInAndEventEventDateBetweenAndStateIn(
+    List<EventState> findAllByEvent_Initiator_IdInAndEvent_Category_IdInAndEvent_EventDateBetweenAndStateIn(
             List<Long> initiatorIds,
             List<Long> categoryIds,
             LocalDateTime rangeStart,

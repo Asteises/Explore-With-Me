@@ -20,7 +20,7 @@ public interface EventStorage extends JpaRepository<Event, Long> {
 
     List<Event> findEventsByIdIn(List<Long> eventIds);
 
-    Page<Event> findEventsByAnnotationContainingIgnoreCaseAndDescriptionContainingIgnoreCaseAndCategory_IdInAndPaidAndEventDateBetweenOrderByEventDateDesc(
+    Page<Event> findEventsByAnnotationContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndCategory_IdInAndPaidAndEventDateBetweenOrderByEventDateDesc(
             String annotation,
             String description,
             List<Long> catIds,

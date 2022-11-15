@@ -32,7 +32,7 @@ public class RequestController {
             + если для события отключена пре-модерация запросов на участие, то запрос должен автоматически перейти в состояние подтвержденного;
      */
     @PostMapping("/{userId}/requests")
-    public ParticipationRequestDto createRequest(@PathVariable long userId,
+    public ParticipationRequestDto createRequest(@PathVariable Long userId,
                                                  @RequestParam long eventId) {
 
         log.info("Пользователь userId={} создает новый запрос а событие eventId={}", userId, eventId);

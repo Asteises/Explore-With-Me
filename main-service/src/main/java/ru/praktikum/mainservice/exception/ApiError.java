@@ -194,8 +194,8 @@ public class ApiError {
     }
 
     @JsonProperty("status")
-    private StatusEnum status = null;
+    private StatusEnum status;
 
     @JsonProperty("timestamp")
-    private String timestamp = null;
+    private String timestamp;
 }

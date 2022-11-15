@@ -279,6 +279,7 @@ public class EventServiceImpl implements EventService {
             // А остальные не одобренные запросы отклоняем;
             List<Request> requests = requestStorage.findAllByEvent_IdAndStatus(eventId, "PENDING");
             requests.forEach(req -> req.setStatus("CANCELED"));
+            requestStorage.saveAll(requests);
         }
 
         pRDto.setStatus("CONFIRMED");
@@ -346,7 +347,7 @@ public class EventServiceImpl implements EventService {
         }
 
         // Собираем все события согласно переданным параметрам;
-        List<Event> events = eventStorage.findEventsByAnnotationContainingIgnoreCaseAndDescriptionContainingIgnoreCaseAndCategory_IdInAndPaidAndEventDateBetweenOrderByEventDateDesc(
+        List<Event> events = eventStorage.findEventsByAnnotationContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndCategory_IdInAndPaidAndEventDateBetweenOrderByEventDateDesc(
                 text,
                 text,
                 Arrays.stream(categories).toList(),
@@ -425,7 +426,7 @@ public class EventServiceImpl implements EventService {
 
         // Сначала находим список EventState по указанным параметрам, так как там лежат state;
         List<EventState> eventStates =
-                eventStateStorage.findAllByEvent_Initiator_IdInAndEvent_Category_IdInAndEventEventDateBetweenAndStateIn(
+                eventStateStorage.findAllByEvent_Initiator_IdInAndEvent_Category_IdInAndEvent_EventDateBetweenAndStateIn(
                         Arrays.stream(users).toList(),
                         Arrays.stream(categories).toList(),
                         start,
