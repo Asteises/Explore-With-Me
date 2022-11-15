@@ -15,6 +15,7 @@ import org.springframework.validation.annotation.Validated;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Location {
+
     @JsonProperty("lat")
     private Float lat;
 

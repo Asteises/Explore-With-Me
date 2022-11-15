@@ -6,13 +6,8 @@ import lombok.Setter;
 import lombok.ToString;
 import ru.praktikum.mainservice.event.model.Event;
 
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.MapsId;
-import javax.persistence.Table;
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
@@ -21,15 +16,21 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "compilation_events")
 public class CompilationEvent {
-    @EmbeddedId
-    private CompilationEventId id;
 
-    @MapsId("compId")
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
+    private Long id;
+//    private CompilationEventId id;
+
+//    @MapsId("compId")
+    @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "comp_id", nullable = false)
     private Compilation comp;
 
-    @MapsId("eventId")
+//    @MapsId("eventId")
+    @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "event_id", nullable = false)
     private Event event;

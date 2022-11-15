@@ -16,12 +16,14 @@ public class MainServiceApplication {
     // TODO Нарисовать архитектуру приложения и каждой из БД;
     // TODO Настроить 2 БД и докер;
     // TODO Сделать ПР и выложить в Яндекс презентацию;
+    // TODO Отладить тесты Postman
+    // TODO Просмотреть ТЗ на модуль статистики;
 
     // TODO Что уже сделано из логики:
 	/*
 	Public: События
-	    - GET /events - Получение событий с возможностью фильтрации
-        - GET /events/{id} - Получение подробной информации об опубликованном событии по его идентификатору
+	    -+ GET /events - Получение событий с возможностью фильтрации
+        + GET /events/{id} - Получение подробной информации об опубликованном событии по его идентификатору
 
     Public: Подборки событий
         + GET /compilations - Получение подборок событий
@@ -47,7 +49,7 @@ public class MainServiceApplication {
         + PATCH /users/{userId}/requests/{requestId}/cancel - Отмена своего запроса на участие в событии
 
     Admin: События
-        + GET /admin/events - Поиск событий
+        -+ GET /admin/events - Поиск событий
         + PUT /admin/events/{eventId} - Редактирование события
         + PATCH /admin/events/{eventId}/publish - Публикация события
         + PATCH /admin/events/{eventId}/reject - Отклонение события
@@ -64,11 +66,11 @@ public class MainServiceApplication {
 
     Admin: Подборки событий
         + POST /admin/compilations - Добавление новой подборки
-        + DELETE /admin/compilations/{compId} - Удаление подборки
+        -+ DELETE /admin/compilations/{compId} - Удаление подборки
         + DELETE /admin/compilations/{compId}/events/{eventId} - Удалить событие из подборки
-        - PATCH /admin/compilations/{compId}/events/{eventId} - Добавить событие в подборку
-        - DELETE /admin/compilations/{compId}/pin - Открепить подборку на главной странице
-        - PATCH /admin/compilations/{compId}/pin - Закрепить подборку на главной странице
+        + PATCH /admin/compilations/{compId}/events/{eventId} - Добавить событие в подборку
+        + DELETE /admin/compilations/{compId}/pin - Открепить подборку на главной странице
+        + PATCH /admin/compilations/{compId}/pin - Закрепить подборку на главной странице
 	 */
 
 }

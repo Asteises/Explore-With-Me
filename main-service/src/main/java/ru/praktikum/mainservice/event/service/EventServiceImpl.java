@@ -27,7 +27,9 @@ import ru.praktikum.mainservice.user.model.User;
 import ru.praktikum.mainservice.user.repository.UserStorage;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -318,8 +320,8 @@ public class EventServiceImpl implements EventService {
     /*
     GET EVENTS - Получение событий с возможностью фильтрации
         Обратите внимание:
-            это публичный эндпоинт, соответственно в выдаче должны быть только опубликованные события;
-            текстовый поиск (по аннотации и подробному описанию) должен быть без учета регистра букв;
+            + это публичный эндпоинт, соответственно в выдаче должны быть только опубликованные события;
+            + текстовый поиск (по аннотации и подробному описанию) должен быть без учета регистра букв;
             если в запросе не указан диапазон дат [rangeStart-rangeEnd], то нужно выгружать события, которые произойдут позже текущей даты и времени;
             информация о каждом событии должна включать в себя количество просмотров и количество уже одобренных заявок на участие;
             информацию о том, что по этому эндпоинту был осуществлен и обработан запрос, нужно сохранить в сервисе статистики;
@@ -334,19 +336,75 @@ public class EventServiceImpl implements EventService {
                                                   String sort,
                                                   Integer from,
                                                   Integer size) {
-        return null;
+
+        // Создаем переменные для метода и записываем в них значения по умолчанию;
+        LocalDateTime start = LocalDateTime.now();
+        LocalDateTime end = null;
+
+        // Если переменные в параметрах метода пришли не пустые, то перезаписываем их;
+        if (rangeStart != null && rangeEnd != null) {
+            start = LocalDateTime.parse(rangeStart, EventMapper.FORMATTER_EVENT_DATE);
+            end = LocalDateTime.parse(rangeEnd, EventMapper.FORMATTER_EVENT_DATE);
+        }
+
+        // Собираем все события согласно переданным параметрам;
+        List<Event> events = eventStorage.findEventsByAnnotationContainingIgnoreCaseAndDescriptionContainingIgnoreCaseAndCategory_IdInAndPaidAndEventDateBetweenOrderByEventDateDesc(
+                text,
+                text,
+                Arrays.stream(categories).toList(),
+                paid,
+                start,
+                end,
+                PageRequest.of(from / size, size)
+                ).stream().toList();
+        // Создаем результирующий объект;
+        List<EventShortDto> result = new ArrayList<>();
+
+        // Для каждого события применяем метод getPublicEventById;
+        for (Event event: events) {
+            EventFullDto eventFullDto = getPublicEventById(event.getId());
+
+            // Мапим в EventShortDto и сохраняем в результат;
+            result.add(EventMapper.fromFullDtoToShortDto(eventFullDto));
+        }
+
+        // Сортируем результат, по умолчанию будет сортировка по EVENT_DATE;
+        if (sort.equals("VIEWS")) {
+            result.sort(Comparator.comparing(EventShortDto::getViews));
+        }
+        log.info("Выводим все публичные события всего: {}", result.size());
+        return result;
     }
 
     /*
     Получение подробной информации об опубликованном событии по его идентификатору
         Обратите внимание:
-            событие должно быть опубликовано;
-            информация о событии должна включать в себя количество просмотров и количество подтвержденных запросов;
-            информацию о том, что по этому эндпоинту был осуществлен и обработан запрос, нужно сохранить в сервисе статистики;
+            + событие должно быть опубликовано;
+            -+ информация о событии должна включать в себя количество просмотров и количество подтвержденных запросов;
+            - информацию о том, что по этому эндпоинту был осуществлен и обработан запрос, нужно сохранить в сервисе статистики;
      */
     @Override
     public EventFullDto getPublicEventById(long id) {
-        return null;
+
+        // Проверяем, что событие существует;
+        Event event = checkEventAvailableInDb(id);
+
+        // Достаем EventState, чтобы получить статус;
+        EventState eventState = checkEventStateAvailableInDb(event.getId());
+
+        // Проверяем статус события;
+        checkStatusPublished(eventState);
+
+        EventFullDto result = EventMapper.fromEventToEventFullDto(event);
+
+        // Проверяем количество подтвержденных запросов и сетим их в результат;
+        result.setConfirmedRequests(getConfirmedRequests(id));
+
+        // TODO Тут нужно будет засетить количество просмотров
+        // TODO И сохранить информацию о вызове этого метода в сервисе статистики
+
+        log.info("Выводим публичное событие: {}", result);
+        return result;
     }
 
     /*
@@ -362,6 +420,7 @@ public class EventServiceImpl implements EventService {
                                            Integer from,
                                            Integer size) {
 
+        // TODO Я так понимаю, что тут нужно применить предикаты;
         // Создаем из стрингов LocalDateTime;
         LocalDateTime start = LocalDateTime.parse(rangeStart, EventMapper.FORMATTER_EVENT_DATE);
         LocalDateTime end = LocalDateTime.parse(rangeEnd, EventMapper.FORMATTER_EVENT_DATE);
@@ -521,7 +580,7 @@ public class EventServiceImpl implements EventService {
     }
 
     /*
-    Метод проверяет статус у EventState;
+    Метод проверяет статус PENDING у EventState;
      */
     private void checkStatePending(EventState eventState) {
 
@@ -530,6 +589,30 @@ public class EventServiceImpl implements EventService {
                     .format("Событие имеет статус отличный от модерации state=%s", eventState.getState()));
         }
         log.info("Проверяем статус у eventStateId={} : state={}", eventState.getId(), eventState.getState());
+    }
+
+    /*
+    Метод проверяет статус PUBLISHED у EventState;
+    */
+    private void checkStatusPublished(EventState eventState) {
+
+        if (!eventState.getState().equals(StateEnum.PUBLISHED.toString())) {
+            throw new BadRequestException(String
+                    .format("Событие должно быть опубликовано: state=%s", eventState.getState()));
+        }
+        log.info("Проверяем статус у eventStateId={} : state={}", eventState.getId(), eventState.getState());
+    }
+
+    /*
+    Метод проверяет количество подтвержденных запросов на участие в событии;
+    */
+    private Long getConfirmedRequests(long eventId) {
+
+        // Собираем все подтвержденные запросы на событие;
+        List<Request> confirmedRequests = requestStorage.findAllByEvent_IdAndStatus(eventId, "CONFIRMED");
+
+        log.info("Подтвержденных запросов у события eventId={}: confirmedRequests={}", eventId, confirmedRequests.size());
+        return (long) confirmedRequests.size();
     }
 
     /*
@@ -543,6 +626,7 @@ public class EventServiceImpl implements EventService {
                             " час после даты публикации publishedOn=%s", eventDate, publishedOn));
         }
     }
+
     /*
     Метод получает все события по пришедшим id;
      */

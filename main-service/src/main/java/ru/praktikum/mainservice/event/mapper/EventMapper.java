@@ -157,4 +157,20 @@ public class EventMapper {
             event.setTitle(adminUpdateEventRequest.getTitle());
         }
     }
+
+    public static EventShortDto fromFullDtoToShortDto(EventFullDto eventFullDto) {
+        EventShortDto eventShortDto = new EventShortDto();
+
+        eventShortDto.setId(eventFullDto.getId());
+        eventShortDto.setAnnotation(eventFullDto.getAnnotation());
+        eventShortDto.setCategory(eventFullDto.getCategory());
+        eventShortDto.setConfirmedRequests(eventFullDto.getConfirmedRequests());
+        eventShortDto.setEventDate(eventFullDto.getEventDate());
+        eventShortDto.setInitiator(eventFullDto.getInitiator());
+        eventShortDto.setPaid(eventFullDto.getPaid());
+        eventShortDto.setTitle(eventFullDto.getTitle());
+        eventShortDto.setViews(eventFullDto.getViews());
+
+        return eventShortDto;
+    }
 }
