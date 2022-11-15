@@ -242,7 +242,7 @@ public class EventServiceImpl implements EventService {
     /*
     PATCH EVENT - Подтверждение чужой заявки на участие в событии текущего пользователя:
         Обратите внимание:
-            если для события лимит заявок равен 0 или отключена пре-модерация заявок, то подтверждение заявок не требуется;
+            + если для события лимит заявок равен 0 или отключена пре-модерация заявок, то подтверждение заявок не требуется;
             нельзя подтвердить заявку, если уже достигнут лимит по заявкам на данное событие;
             если при подтверждении данной заявки, лимит заявок для события исчерпан, то все неподтверждённые заявки необходимо отклонить;
      */
@@ -279,8 +279,6 @@ public class EventServiceImpl implements EventService {
             // А остальные не одобренные запросы отклоняем;
             List<Request> requests = requestStorage.findAllByEvent_IdAndStatus(eventId, "PENDING");
             requests.forEach(req -> req.setStatus("CANCELED"));
-
-            // Если лимит исчерпан, выбрасываем исключение;
         }
 
         pRDto.setStatus("CONFIRMED");
@@ -494,7 +492,7 @@ public class EventServiceImpl implements EventService {
         EventFullDto result = EventMapper.fromEventToEventFullDto(currentEvent);
 
         // Сетим новые данные и сохраняем в БД;
-        eventState.setState(StateEnum.PENDING.toString());
+        eventState.setState(StateEnum.PUBLISHED.toString());
         eventStateStorage.save(eventState);
         result.setState(StateEnum.PUBLISHED);
 
@@ -626,7 +624,6 @@ public class EventServiceImpl implements EventService {
                             " час после даты публикации publishedOn=%s", eventDate, publishedOn));
         }
     }
-
     /*
     Метод получает все события по пришедшим id;
      */
@@ -645,20 +642,22 @@ public class EventServiceImpl implements EventService {
 
         long totalLimit = event.getParticipantLimit();
 
-        // Находим количество всех одобренных заявок;
-        long currentLimit = requestStorage.findAllByEvent_IdAndStatus(event.getId(), "CONFIRMED").size();
-
         // Если нет лимита и отключена модерация;
         if (totalLimit == 0
                 && event.getRequestModeration().equals(Boolean.FALSE)) {
             return true;
-            // Если осталось последнее место;
-        } else if (totalLimit == currentLimit + 1) {
+        }
+        // Находим количество всех одобренных заявок;
+        long currentLimit = requestStorage.findAllByEvent_IdAndStatus(event.getId(), "CONFIRMED").size();
+
+        // Если осталось последнее место;
+        if (totalLimit == currentLimit + 1) {
             return false;
             // Если лимит исчерпан;
-        } else {
+        } else if (currentLimit >= totalLimit) {
             throw new BadRequestException(String.format("Лимит заявок на событие превышен: eventId=%s", event.getId()));
         }
+        return true;
     }
 
 }

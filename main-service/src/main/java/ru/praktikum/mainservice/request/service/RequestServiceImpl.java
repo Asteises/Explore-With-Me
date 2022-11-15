@@ -106,16 +106,18 @@ public class RequestServiceImpl implements RequestService {
     @Override
     public Request checkRequestAvailableInDb(long requestId) {
         return requestStorage.findById(requestId)
-                .orElseThrow(() -> new NotFoundException(String.format("Запрос с таким requestId=%s не найден", requestId)));
+                .orElseThrow(() -> new NotFoundException(String
+                        .format("Запрос с таким requestId=%s не найден", requestId)));
     }
 
     /*
     Метод проверяет что запрос создается впервые;
     */
     private void checkRepeatRequest(long eventId, long requesterId) {
-        requestStorage.findRequestByEvent_IdAndRequester_Id(eventId, requesterId)
-                .orElseThrow(() -> new BadRequestException(String.format("Повторный запрос от пользователя " +
-                        "requesterId=%s на событие eventId=%s", requesterId, eventId)));
+        if (requestStorage.findRequestByEvent_IdAndRequester_Id(eventId, requesterId).isPresent()) {
+            throw new BadRequestException(String.format("Повторный запрос от пользователя " +
+                    "requesterId=%s на событие eventId=%s", requesterId, eventId));
+        }
     }
 
     /*
@@ -124,7 +126,7 @@ public class RequestServiceImpl implements RequestService {
     private void checkRequesterNotInitiator(Event event, User requester) {
         if (event.getInitiator().equals(requester)) {
             throw new BadRequestException(String.format("Запрос не может быть создан инициатором " +
-                    "события requesterId={}", requester.getId()));
+                    "события requesterId=%s", requester.getId()));
         }
     }
 
