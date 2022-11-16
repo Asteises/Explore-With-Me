@@ -10,10 +10,7 @@ import ru.praktikum.mainservice.event.enums.StateEnum;
 import ru.praktikum.mainservice.event.mapper.EventMapper;
 import ru.praktikum.mainservice.event.model.Event;
 import ru.praktikum.mainservice.event.model.EventState;
-import ru.praktikum.mainservice.event.model.dto.AdminUpdateEventRequest;
-import ru.praktikum.mainservice.event.model.dto.EventFullDto;
-import ru.praktikum.mainservice.event.model.dto.EventShortDto;
-import ru.praktikum.mainservice.event.model.dto.NewEventDto;
+import ru.praktikum.mainservice.event.model.dto.*;
 import ru.praktikum.mainservice.event.repository.EventStateStorage;
 import ru.praktikum.mainservice.event.repository.EventStorage;
 import ru.praktikum.mainservice.exception.BadRequestException;
@@ -26,6 +23,11 @@ import ru.praktikum.mainservice.request.repository.RequestStorage;
 import ru.praktikum.mainservice.user.model.User;
 import ru.praktikum.mainservice.user.repository.UserStorage;
 
+import javax.persistence.EntityManager;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -43,6 +45,8 @@ public class EventServiceImpl implements EventService {
     private final UserStorage userStorage;
     private final CategoryStorage categoryStorage;
     private final RequestStorage requestStorage;
+
+    private EntityManager entityManager;
 
     /*
     POST EVENT - Добавление нового события:
@@ -355,12 +359,12 @@ public class EventServiceImpl implements EventService {
                 start,
                 end,
                 PageRequest.of(from / size, size)
-                ).stream().toList();
+        ).stream().toList();
         // Создаем результирующий объект;
         List<EventShortDto> result = new ArrayList<>();
 
         // Для каждого события применяем метод getPublicEventById;
-        for (Event event: events) {
+        for (Event event : events) {
             EventFullDto eventFullDto = getPublicEventById(event.getId());
 
             // Мапим в EventShortDto и сохраняем в результат;
@@ -442,6 +446,27 @@ public class EventServiceImpl implements EventService {
         log.info("Выводим список событий: events.size={}", events.size());
         return events.stream().map(EventMapper::fromEventToEventFullDto).collect(Collectors.toList());
     }
+
+//    public List<EventFullDto> searchEventsByPredicates(Long[] users,
+//                                                       String[] states,
+//                                                       Long[] categories,
+//                                                       String rangeStart,
+//                                                       String rangeEnd,
+//                                                       Integer from,
+//                                                       Integer size) {
+//
+//        // Создаем менеджер для работы с предикатами;
+//        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+//
+//        // Какой объект мы хотим получить в результате запроса;
+//        CriteriaQuery<Event> query = cb.createQuery(Event.class);
+//
+//        // Как RawMApper, позволяет работать с объектами выбранного класса;
+//        Root<Event> order = query.from(Event.class);
+//
+//        // Создаем список куда будем складывать предикаты;
+//        List<Predicate> predicates = getPredicates(orderFilterDto, cb, order);
+//    }
 
     @Override
     public EventFullDto updateEventByAdmin(long eventId, AdminUpdateEventRequest adminUpdateEventRequest) {
@@ -625,6 +650,7 @@ public class EventServiceImpl implements EventService {
                             " час после даты публикации publishedOn=%s", eventDate, publishedOn));
         }
     }
+
     /*
     Метод получает все события по пришедшим id;
      */
@@ -660,5 +686,25 @@ public class EventServiceImpl implements EventService {
         }
         return true;
     }
+
+//    public List<Predicate> getPredicates(EventFilterDto eventFilterDto,
+//                                         CriteriaBuilder cb,
+//                                         Root<Event> event) {
+//
+//        // Создаем лист куда будем складывать предикаты;
+//        List<Predicate> predicates = new ArrayList<>();
+//
+//        // Long[] users
+//        if (eventFilterDto.getUsers() != null) {
+//            Predicate usersPredicate = cb.equal(
+//                    event.get("initiator").get("id"), eventFilterDto.getUsers());
+//        }
+//
+//        if (eventFilterDto.getStates() != null) {
+//            Predicate statesPredicate = cb.equal(
+//                    event.get("initiator").get("id"), eventFilterDto.getUsers());
+//        }
+//
+//    }
 
 }
