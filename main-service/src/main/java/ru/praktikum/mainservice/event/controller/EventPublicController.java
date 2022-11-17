@@ -54,7 +54,20 @@ public class EventPublicController {
         log.info("endpoint path: {}", request.getRequestURI());
         statClient.saveRequestInfo(request);
 
-        return eventService.getAllPublicEvents(text, categories, paid, rangeStart, rangeEnd, onlyAvailable, sort, from, size);
+        List<EventShortDto> events = eventService.getAllPublicEvents(
+                text,
+                categories,
+                paid,
+                rangeStart,
+                rangeEnd,
+                onlyAvailable,
+                sort,
+                from,
+                size);
+
+        events.forEach(eventShortDto -> eventShortDto.setViews(statClient.getViews(eventShortDto.getId())));
+
+        return events;
     }
 
     /*
@@ -73,6 +86,7 @@ public class EventPublicController {
         // Информация для сервиса статистики;
         log.info("client ip: {}", request.getRemoteAddr());
         log.info("endpoint path: {}", request.getRequestURI());
+        statClient.saveRequestInfo(request);
 
         return eventService.getPublicEventById(id);
     }

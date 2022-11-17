@@ -447,26 +447,26 @@ public class EventServiceImpl implements EventService {
         return events.stream().map(EventMapper::fromEventToEventFullDto).collect(Collectors.toList());
     }
 
-//    public List<EventFullDto> searchEventsByPredicates(Long[] users,
-//                                                       String[] states,
-//                                                       Long[] categories,
-//                                                       String rangeStart,
-//                                                       String rangeEnd,
-//                                                       Integer from,
-//                                                       Integer size) {
-//
-//        // Создаем менеджер для работы с предикатами;
-//        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-//
-//        // Какой объект мы хотим получить в результате запроса;
-//        CriteriaQuery<Event> query = cb.createQuery(Event.class);
-//
-//        // Как RawMApper, позволяет работать с объектами выбранного класса;
-//        Root<Event> order = query.from(Event.class);
-//
-//        // Создаем список куда будем складывать предикаты;
-//        List<Predicate> predicates = getPredicates(orderFilterDto, cb, order);
-//    }
+    public List<EventFullDto> searchEventsByPredicates(Long[] users,
+                                                       String[] states,
+                                                       Long[] categories,
+                                                       String rangeStart,
+                                                       String rangeEnd,
+                                                       Integer from,
+                                                       Integer size) {
+
+        // Создаем менеджер для работы с предикатами;
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+
+        // Какой объект мы хотим получить в результате запроса;
+        CriteriaQuery<Event> query = cb.createQuery(Event.class);
+
+        // Как RawMApper, позволяет работать с объектами выбранного класса;
+        Root<Event> order = query.from(Event.class);
+
+        // Создаем список куда будем складывать предикаты;
+        List<Predicate> predicates = getPredicates(orderFilterDto, cb, order);
+    }
 
     @Override
     public EventFullDto updateEventByAdmin(long eventId, AdminUpdateEventRequest adminUpdateEventRequest) {

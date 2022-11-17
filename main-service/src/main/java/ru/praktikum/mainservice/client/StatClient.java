@@ -15,24 +15,32 @@ import java.time.LocalDateTime;
 
 @Slf4j
 @Service
-public class StatClient {
+public class StatClient extends BaseClient {
 
+    //@Value("${ewm-stats-service.url}") String url,
     @Autowired
-    public StatClient(@Value("${ewm-stat-service.url}") String url, RestTemplateBuilder builder) {
+    public StatClient(RestTemplateBuilder builder) {
         super(
                 builder
-                        .uriTemplateHandler(new DefaultUriBuilderFactory("http://server:9090" + API_PREFIX))
+                        .uriTemplateHandler(new DefaultUriBuilderFactory("http://localhost:9090"))
                         .requestFactory(HttpComponentsClientHttpRequestFactory::new)
                         .build()
         );
     }
 
     public void saveRequestInfo(HttpServletRequest httpServletRequest) {
+
         EndpointHitDto endpointHitDto = new EndpointHitDto();
         endpointHitDto.setApp("main-service");
         endpointHitDto.setUri(httpServletRequest.getRequestURI());
         endpointHitDto.setIp(httpServletRequest.getRemoteAddr());
         endpointHitDto.setTimestamp(LocalDateTime.now().format(EventMapper.FORMATTER_EVENT_DATE));
-        post()
+
+        post("/stats/hit", endpointHitDto);
+    }
+
+    public Long getViews(long eventId) {
+
+        return (Long) get("/stats/" + eventId).getBody();
     }
 }

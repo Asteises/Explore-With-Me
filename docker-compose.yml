@@ -39,12 +39,21 @@ services:
     depends_on:
       - ewm-stats-db
     environment:
-        SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/ewm
+        SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/ewm-stat
         POSTGRES_USER: postgres
         POSTGRES_PASSWORD: postgres
-        EWM_STATS_SERVICE_URL: http://stats-service:9090
     networks:
       - ewm-net
 
   stats-db: # Не менять имя
     image: postgres:14-alpine
+    container_name: ewm_stats_db_container
+    ports:
+      - "6542:5432"
+    volumes:
+      - /var/lib/postgresql/data/
+    networks:
+      - ewm-net
+networks:
+  ewm-net:
+    driver: bridge

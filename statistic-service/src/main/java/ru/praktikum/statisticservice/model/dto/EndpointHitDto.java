@@ -22,5 +22,5 @@ public class EndpointHitDto {
     private String ip;
 
     @JsonProperty("timestamp")
-    private String timestamp;
+    private String created;
 }
