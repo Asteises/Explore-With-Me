@@ -6,7 +6,9 @@ import lombok.*;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.Table;
+import java.time.LocalDateTime;
 
 /**
  * EndpointHit
@@ -22,6 +24,7 @@ public class EndpointHit {
 
     @JsonProperty("id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
     private Long id;
 
     @JsonProperty("app")
@@ -33,6 +36,6 @@ public class EndpointHit {
     @JsonProperty("ip")
     private String ip;
 
-    @JsonProperty("timestamp")
-    private String timestamp;
+    @JsonProperty("created")
+    private LocalDateTime created;
 }
