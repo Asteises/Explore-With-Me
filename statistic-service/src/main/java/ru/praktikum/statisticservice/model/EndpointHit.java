@@ -1,25 +1,38 @@
 package ru.praktikum.statisticservice.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.springframework.validation.annotation.Validated;
+import lombok.*;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Table;
 
 /**
  * EndpointHit
  */
-@Validated
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
+@NoArgsConstructor
+@Entity
+@Table(name = "endpoint_hit")
 public class EndpointHit {
+
     @JsonProperty("id")
-    private Long id = null;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @JsonProperty("app")
-    private String app = null;
+    private String app;
 
     @JsonProperty("uri")
-    private String uri = null;
+    private String uri;
 
     @JsonProperty("ip")
-    private String ip = null;
+    private String ip;
 
     @JsonProperty("timestamp")
-    private String timestamp = null;
+    private String timestamp;
 }

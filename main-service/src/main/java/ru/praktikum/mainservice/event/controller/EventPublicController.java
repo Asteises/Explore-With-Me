@@ -3,13 +3,14 @@ package ru.praktikum.mainservice.event.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import ru.praktikum.mainservice.client.StatClient;
 import ru.praktikum.mainservice.event.model.dto.EventFullDto;
 import ru.praktikum.mainservice.event.model.dto.EventShortDto;
 import ru.praktikum.mainservice.event.service.EventService;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
@@ -18,7 +19,9 @@ import java.util.List;
 @RequestMapping("/events")
 public class EventPublicController {
 
-    public final EventService eventService;
+    private final EventService eventService;
+
+    private final StatClient statClient;
 
     //TODO Сделать вместе
     /*
@@ -39,11 +42,18 @@ public class EventPublicController {
                                                   @RequestParam(defaultValue = "false") Boolean onlyAvailable,
                                                   @RequestParam String sort, // Вариант сортировки: по дате события или по количеству просмотров Available values : EVENT_DATE, VIEWS
                                                   @PositiveOrZero @RequestParam(defaultValue = "0") Integer from,
-                                                  @Positive @RequestParam(defaultValue = "10") Integer size) {
+                                                  @Positive @RequestParam(defaultValue = "10") Integer size,
+                                                  HttpServletRequest request) {
 
         log.info("Получаем все события с учетом фильтрации: text={}, categories={}, paid={}, rangeStart={}, " +
                         "rangeEnd={}, onlyAvailable={}, sort={}, from={}, size={}",
                 text, categories, paid, rangeStart, rangeEnd, onlyAvailable, sort, from, size);
+
+        // Информация для сервиса статистики;
+        log.info("client ip: {}", request.getRemoteAddr());
+        log.info("endpoint path: {}", request.getRequestURI());
+        statClient.saveRequestInfo(request);
+
         return eventService.getAllPublicEvents(text, categories, paid, rangeStart, rangeEnd, onlyAvailable, sort, from, size);
     }
 
@@ -55,9 +65,15 @@ public class EventPublicController {
             информацию о том, что по этому эндпоинту был осуществлен и обработан запрос, нужно сохранить в сервисе статистики;
      */
     @GetMapping("/{id}")
-    public EventFullDto getPublicEventById(@PathVariable long id) {
+    public EventFullDto getPublicEventById(@PathVariable long id,
+                                           HttpServletRequest request) {
 
         log.info("Получаем событие: id={}", id);
+
+        // Информация для сервиса статистики;
+        log.info("client ip: {}", request.getRemoteAddr());
+        log.info("endpoint path: {}", request.getRequestURI());
+
         return eventService.getPublicEventById(id);
     }
 }

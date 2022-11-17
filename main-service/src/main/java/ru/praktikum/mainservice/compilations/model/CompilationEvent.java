@@ -21,15 +21,12 @@ public class CompilationEvent {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
-//    private CompilationEventId id;
 
-//    @MapsId("compId")
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "comp_id", nullable = false)
     private Compilation comp;
 
-//    @MapsId("eventId")
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "event_id", nullable = false)
