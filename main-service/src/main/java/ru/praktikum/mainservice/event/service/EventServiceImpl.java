@@ -447,29 +447,6 @@ public class EventServiceImpl implements EventService {
         return events.stream().map(EventMapper::fromEventToEventFullDto).collect(Collectors.toList());
     }
 
-    public List<EventFullDto> searchEventsByPredicates(Long[] users,
-                                                       String[] states,
-                                                       Long[] categories,
-                                                       String rangeStart,
-                                                       String rangeEnd,
-                                                       Integer from,
-                                                       Integer size) {
-
-        // Создаем менеджер для работы с предикатами;
-        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-
-        // Какой объект мы хотим получить в результате запроса;
-        CriteriaQuery<Event> query = cb.createQuery(Event.class);
-
-        // Как RawMApper, позволяет работать с объектами выбранного класса;
-        Root<Event> order = query.from(Event.class);
-
-        // Создаем список куда будем складывать предикаты;
-        List<Predicate> predicates = getPredicates(orderFilterDto, cb, order);
-
-        QueryDsl
-    }
-
     @Override
     public EventFullDto updateEventByAdmin(long eventId, AdminUpdateEventRequest adminUpdateEventRequest) {
 
@@ -688,25 +665,5 @@ public class EventServiceImpl implements EventService {
         }
         return true;
     }
-
-//    public List<Predicate> getPredicates(EventFilterDto eventFilterDto,
-//                                         CriteriaBuilder cb,
-//                                         Root<Event> event) {
-//
-//        // Создаем лист куда будем складывать предикаты;
-//        List<Predicate> predicates = new ArrayList<>();
-//
-//        // Long[] users
-//        if (eventFilterDto.getUsers() != null) {
-//            Predicate usersPredicate = cb.equal(
-//                    event.get("initiator").get("id"), eventFilterDto.getUsers());
-//        }
-//
-//        if (eventFilterDto.getStates() != null) {
-//            Predicate statesPredicate = cb.equal(
-//                    event.get("initiator").get("id"), eventFilterDto.getUsers());
-//        }
-//
-//    }
 
 }

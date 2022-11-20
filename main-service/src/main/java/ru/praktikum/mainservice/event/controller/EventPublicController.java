@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.praktikum.mainservice.client.StatClient;
 import ru.praktikum.mainservice.event.model.dto.EventFullDto;
+import ru.praktikum.mainservice.event.model.dto.EventPublicFilterDto;
 import ru.praktikum.mainservice.event.model.dto.EventShortDto;
 import ru.praktikum.mainservice.event.service.EventService;
 
@@ -23,7 +24,6 @@ public class EventPublicController {
 
     private final StatClient statClient;
 
-    //TODO Сделать вместе
     /*
     GET EVENTS - Получение событий с возможностью фильтрации
         Обратите внимание:
@@ -53,6 +53,9 @@ public class EventPublicController {
         log.info("client ip: {}", request.getRemoteAddr());
         log.info("endpoint path: {}", request.getRequestURI());
         statClient.saveRequestInfo(request);
+
+        EventPublicFilterDto eventPublicFilterDto = new EventPublicFilterDto(
+                text, categories, paid, rangeStart, rangeEnd, onlyAvailable, sort);
 
         List<EventShortDto> events = eventService.getAllPublicEvents(
                 text,

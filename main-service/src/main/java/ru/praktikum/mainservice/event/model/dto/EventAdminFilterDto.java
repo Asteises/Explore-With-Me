@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class EventFilterDto {
+public class EventAdminFilterDto {
 
     private Long[] users;
     private String[] states;
