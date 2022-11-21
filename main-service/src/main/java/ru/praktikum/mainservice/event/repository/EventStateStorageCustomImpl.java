@@ -10,13 +10,17 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class EventStateStorageCustomImpl implements EventStateStorageCustom {
 
-    @PersistenceContext // Для корректного открытия и закрытия EntityManager;
+    // Для корректного открытия и закрытия EntityManager;
+    @PersistenceContext
     private EntityManager entityManager;
 
     // Ищем только опубликованные события: State - PUBLISHED
@@ -25,8 +29,47 @@ public class EventStateStorageCustomImpl implements EventStateStorageCustom {
         return null;
     }
 
-    private List<Predicate> getPredicates() {
-        return null;
+    private List<Predicate> getPredicates(EventPublicFilterDto eventDto,
+                                          CriteriaBuilder cb,
+                                          Root<EventState> eventState) {
+
+        List<Predicate> predicates = new ArrayList<>();
+
+        if (eventDto.getState() != null) {
+            Predicate statePredicate = cb.equal(eventState.get("state"), eventDto.getState());
+            predicates.add(statePredicate);
+        }
+
+        if (eventDto.getText() != null) {
+            Predicate textAnnotationPredicate = cb.equal(eventState.get("event").get("annotation"), eventDto.getText());
+            predicates.add(textAnnotationPredicate);
+
+            Predicate textDescriptionPredicate = cb.equal(eventState.get("event").get("description"), eventDto.getText());
+            predicates.add(textDescriptionPredicate);
+        }
+
+        if(eventDto.getCategories() != null) {
+            List<Long> catIds = Arrays.asList(eventDto.getCategories());
+
+            Expression<Long> catEventIds = eventState.get("event").get("category").get("id");
+
+            Predicate predicateCatIn = catEventIds.in(catIds);
+            predicates.add(predicateCatIn);
+        }
+
+        if(eventDto.getPaid() != null) {
+            Predicate paidPredicate = cb.equal(eventState.get("event").get("paid"), eventDto.getPaid());
+            predicates.add(paidPredicate);
+        }
+
+        if(eventDto.getRangeStart() != null && eventDto.getRangeEnd() != null) {
+            Predicate rangeStartEndPredicate = cb.between(eventState.get("createdOn"),
+                    eventDto.getRangeStart(),
+                    eventDto.getRangeEnd());
+            predicates.add(rangeStartEndPredicate);
+        }
+
+        return predicates;
     }
 
     public List<EventFullDto> searchEventsByPredicates(Long[] users,

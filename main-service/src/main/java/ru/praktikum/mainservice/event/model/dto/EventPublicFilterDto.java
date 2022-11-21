@@ -11,6 +11,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class EventPublicFilterDto {
 
+    private String state;
     private String text;
     private Long[] categories;
     private Boolean paid;
