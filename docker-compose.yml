@@ -1,0 +1,59 @@
+version: '3.1'
+services:
+  ewm-service: # Не менять имя
+    build:
+      dockerfile: Dockerfile
+      context: ./main-service
+    image: ewm_main_service_image
+    container_name: ewm_main_service_container
+    ports:
+      - "8080:8080"
+    depends_on:
+      - ewm-db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/ewm
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      EWM_STATS_SERVICE_URL: http://stats-service:9090
+    networks:
+      - ewm-net
+
+  ewm-db: # Не менять имя
+    image: postgres:14-alpine
+    container_name: ewm_db_container
+    ports:
+      - "6541:5432"
+    volumes:
+      - /var/lib/postgresql/data/
+    networks:
+      - ewm-net
+
+  stats-server: # Не менять имя
+    build:
+      dockerfile: Dockerfile
+      context: ./statistic-service
+    image: ewm_stats_main_service_image
+    container_name: ewm_stats_service_container
+    ports:
+      - "9090:9090"
+    depends_on:
+      - ewm-stats-db
+    environment:
+        SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/ewm-stat
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: postgres
+    networks:
+      - ewm-net
+
+  stats-db: # Не менять имя
+    image: postgres:14-alpine
+    container_name: ewm_stats_db_container
+    ports:
+      - "6542:5432"
+    volumes:
+      - /var/lib/postgresql/data/
+    networks:
+      - ewm-net
+networks:
+  ewm-net:
+    driver: bridge
